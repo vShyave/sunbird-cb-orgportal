@@ -2,390 +2,192 @@
   <ws-app-searchuser (handleApiData)="onSearch($event)"></ws-app-searchuser>
 </div>
 
-<div>
-  <mat-accordion>
-    <mat-expansion-panel class="user-card" *ngFor="let user of usersData.content">
-      <mat-expansion-panel-header (click)="getUerData(user)">
-        <div class="float-left">
-          <div class="initialcircle display-inline-block margin-right-s">
-            <!-- <span>AB</span> -->
-            <ws-widget-avatar-photo [name]="getUseravatarName(user)" [photoUrl]="user?.photo" size="m">
-            </ws-widget-avatar-photo>
-          </div>
-          <div class="username display-inline-block" *ngIf="user.profileDetails && user.profileDetails.personalDetails">
-            <div class="mat-subheading-2 margin-remove">
-              {{user.profileDetails.personalDetails.firstname}}
-              <span class="status-label margin-left-s verified" *ngIf="currentFilter !== 'nonverified'">Verified
-                <mat-icon>check_circle</mat-icon></span>
-              <span class="status-label margin-left-s nonverified" *ngIf="currentFilter === 'nonverified'">Non-verified
-                <mat-icon>check_circle</mat-icon></span>
+<mat-accordion>
+  <mat-expansion-panel class="user-card" *ngFor="let user of usersData.content">
+    <mat-expansion-panel-header (click)="getUerData(user)">
+      <div class="flex flex-row gap-4 justify-between w-full">
+        <div class="flex flex-row gap-4 items-center">
+          <ws-widget-avatar-photo [name]="getUserAvatarName(user)" [photoUrl]="user?.photo" size="m"
+            class="md-round"></ws-widget-avatar-photo>
+          <div class="flex flex-col gap-1">
+            <div class="flex flex-row gap-4">
+              {{ handleFormatName(user?.profileDetails?.personalDetails?.firstname) }}
+              <div class="flex flex-row items-center gap-1 status-label verified"
+                *ngIf="currentFilter !== 'nonverified'">
+                Verified
+                <mat-icon>check_circle</mat-icon>
+              </div>
+              <div class="flex flex-row items-center gap-1 status-label nonverified"
+                *ngIf="currentFilter === 'nonverified'">
+                Non-verified
+                <mat-icon>check_circle</mat-icon>
+              </div>
             </div>
-            <div class="mat-body-2 ws-mat-black40-text">{{user.profileDetails && user.profileDetails.professionalDetails
-              &&
-              user.profileDetails.professionalDetails.designation ?
-              user.profileDetails.professionalDetails.designation : '-'}}</div>
-            <!-- <div class="mat-body-2 ws-mat-black40-text" *ngIf="currentFilter !== 'nonverified'">Verified date:
-              19/04/2024</div>
-            <div class="mat-body-2 ws-mat-black40-text" *ngIf="currentFilter === 'nonverified'">Non-verified date:
-              19/04/2024</div> -->
-          </div>
-          <div class="username display-inline-block" *ngIf="!user.profileDetails">
-            <div class="mat-subheading-2 display-inline-block margin-remove">
-              {{user.firstName}}
-              <span class="status-label margin-left-s verified" *ngIf="currentFilter !== 'nonverified'">Verified
-                <mat-icon>check_circle</mat-icon></span>
-              <span class="status-label margin-left-s nonverified" *ngIf="currentFilter === 'nonverified'">Non-verified
-                <mat-icon>check_circle</mat-icon></span>
+            <div class="mat-body-2 ws-mat-black40-text">
+              {{ user?.profileDetails?.professionalDetails?.designation || 'NA' }}
             </div>
-            <div class="mat-body-2 ws-mat-black40-text">{{user.profileDetails && user.profileDetails.professionalDetails
-              &&
-              user.profileDetails.professionalDetails.designation ?
-              user.profileDetails.professionalDetails.designation : '-'}}</div>
-            <!-- <div class="mat-body-2 ws-mat-black40-text" *ngIf="currentFilter !== 'nonverified'">Verified date:
-              19/04/2024</div>
-            <div class="mat-body-2 ws-mat-black40-text" *ngIf="currentFilter === 'nonverified'">Non-verified date:
-              19/04/2024</div> -->
           </div>
         </div>
-        <div class="float-right">
-          <div class="button margin-top-xs mat-body" (click)="editUser(user)"><mat-icon>edit</mat-icon> Edit</div>
+        <div class="flex flex-row items-center">
+          <div class="flex items-center button mat-body gap-2 mr-8" (click)="editUser(user)">
+            <mat-icon>edit</mat-icon>
+            Edit
+          </div>
         </div>
-      </mat-expansion-panel-header>
-
-      <div class="panel-body" *ngIf="user.editUser">
-        <div class="inner-body">
-          Primary Details <mat-icon class="ws-mat-black40-text">info_outline</mat-icon>
-          <form [formGroup]="updateUserDataForm" class="margin-top-m">
-            <mat-grid-list cols="2" rowHeight="60px">
-              <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-                <label class="appr-text-label required">Designation</label>
-                <mat-select class="appr-text-field" #designation formControlName="designation" i18n-placeholder
-                  placeholder="--Select--" (selectionChange)="otherDropDownChange(designation.value, 'designation')">
-                  <mat-option [value]="designation.name" *ngFor="let designation of designationsMeta">
-                    {{designation.name}}
-                  </mat-option>
-                  <mat-option [value]="'Other'">Other</mat-option>
-                </mat-select>
-              </mat-grid-tile>
-
-              <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-                <label class="appr-text-label required">Group</label>
-                <mat-select class="appr-text-field" #group formControlName="group" i18n-placeholder
-                  placeholder="--Select--" (selectionChange)="otherDropDownChange(designation.value, 'designation')">
-                  <mat-option [value]="designation.name" *ngFor="let designation of designationsMeta">
-                    {{designation.name}}
-                  </mat-option>
-                </mat-select>
-              </mat-grid-tile>
-            </mat-grid-list>
-          </form>
+      </div>
+    </mat-expansion-panel-header>
+    <div class="flex flex-col gap-5 p-6">
+      <div class="flex flex-row gap-4 justify-between">
+        <div class="flex flex-row gap-1 items-center">
+          <div class="text-base font-semibold">Primary Details</div>
+          <mat-icon class="ws-mat-black40-text">info_outline</mat-icon>
         </div>
-        <hr>
-        <div class="inner-body">
-          Other Details <mat-icon class="ws-mat-black40-text">info_outline</mat-icon>
-
-          <form [formGroup]="updateUserDataForm" class="margin-top-m">
-            <mat-grid-list cols="3" rowHeight="60px">
-              <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-                <label class="appr-text-label requird">Employee ID</label>
-                <input type="text" [value]="" [disabled]="true" class="appr-text-field">
-              </mat-grid-tile>
-
-              <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-                <label class="appr-text-label required">Email</label>
-                <input type="text" [value]="" class="appr-text-field">
-              </mat-grid-tile>
-
-              <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-                <label class="appr-text-label required">Mobile number</label>
-                <input type="text" [value]="" class="appr-text-field">
-              </mat-grid-tile>
-
-              <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-                <label class="appr-text-label required">Date of Birth</label>
-                <input type="text" [value]="" class="appr-text-field">
-              </mat-grid-tile>
-
-              <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-                <label class="appr-text-label required">Mother Tongue</label>
-                <mat-select class="appr-text-field" #group formControlName="group" i18n-placeholder
-                  placeholder="--Select--" (selectionChange)="otherDropDownChange(designation.value, 'designation')">
-                  <mat-option [value]="designation.name" *ngFor="let designation of designationsMeta">
-                    {{designation.name}}
-                  </mat-option>
-                </mat-select>
-              </mat-grid-tile>
-
-              <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-                <label class="appr-text-label required">Gender</label>
-                <mat-select class="appr-text-field" #group formControlName="group" i18n-placeholder
-                  placeholder="--Select--" (selectionChange)="otherDropDownChange(designation.value, 'designation')">
-                  <mat-option [value]="designation.name" *ngFor="let designation of designationsMeta">
-                    {{designation.name}}
-                  </mat-option>
-                </mat-select>
-              </mat-grid-tile>
-
-              <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-                <label class="appr-text-label required">Office Pin Code</label>
-                <input type="text" [value]="" class="appr-text-field">
-              </mat-grid-tile>
-
-              <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-                <label class="appr-text-label required">eHRMS ID</label>
-                <input type="text" [value]="" [disabled]="true" class="appr-text-field">
-              </mat-grid-tile>
-
-              <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-                <label class="appr-text-label required">Category</label>
-                <mat-select class="appr-text-field" #group formControlName="group" i18n-placeholder
-                  placeholder="--Select--" (selectionChange)="otherDropDownChange(designation.value, 'designation')">
-                  <mat-option [value]="designation.name" *ngFor="let designation of designationsMeta">
-                    {{designation.name}}
-                  </mat-option>
-                </mat-select>
-              </mat-grid-tile>
-
-              <mat-grid-tile [colspan]="1" [rowspan]="10" class="input-wrapper">
-                <mat-card id="roles" *ngIf="!isMdoAdmin"
-                  class="flex flex-1 flex-column margin-top-m margin-bottom-m margin-left-m margin-right-m ws-mat-accent-border">
-                  <div class="flex-custom">
-                    <mat-card-content class="margin-top-m margin-bottom-m margin-left-m margin-right-m">
-                      <span class="mat-subheading-1 flex-4 mobile-margin appr-section-heading" role="link" tabindex="0">
-                        Update roles
-                      </span>
-                      <div class="margin-top-xl new-mobile">
-                        <div class="flex flex-wrap mobile-break">
-                          <div class="w-full profile-cols-full bg-grey">
-                            <ng-container>
-                              <form [formGroup]="updateUserDataForm">
-                                <div class="input-wrapper margin-top-s">
-                                  <label for="roles" class="margin-remove-bottom form-label required" i18n-aria-label
-                                    aria-label="Roles label"
-                                    i18n="Role label|Label which explains the user to select the roles">
-                                    Role
-                                  </label>
-                                  <mat-selection-list id="roles" formControlName="roles" #roles>
-                                    <mat-list-option *ngFor="let role of rolesList"
-                                      (click)="modifyUserRoles(role.roleName)" [selected]="userRoles.has(role.roleName)"
-                                      [value]="role.roleName">
-                                      {{role.roleName}}
-                                    </mat-list-option>
-                                  </mat-selection-list>
-                                </div>
-                                <button mat-raised-button type="submit" (click)="onSubmit(updateUserDataForm, 'Roles')"
-                                  class="margin-top-m text-white btn-success btn-responsive"
-                                  [disabled]="updateUserDataForm?.invalid">
-                                  <span class="text-white" i18n>
-                                    Update
-                                  </span>
-                                </button>
-                                <button mat-raised-button type="submit" (click)="resetRoles()"
-                                  class="margin-top-m text-white btn-success btn-responsive"
-                                  [disabled]="updateUserDataForm?.invalid">
-                                  <span class="text-white" i18n>
-                                    Cancel
-                                  </span>
-                                </button>
-                              </form>
-                            </ng-container>
-                          </div>
-                        </div>
-                      </div>
-                    </mat-card-content>
-                  </div>
-                </mat-card>
-
-                <mat-card id="roles" *ngIf="isMdoAdmin"
-                  class="flex flex-1 flex-column margin-top-m margin-bottom-m margin-left-m margin-right-m ws-mat-accent-border">
-                  <div class="flex-custom">
-                    <mat-card-content class="margin-top-m margin-bottom-m margin-left-m margin-right-m">
-                      <span class="mat-subheading-1 flex-4 mobile-margin appr-section-heading" role="link" tabindex="0">
-                        Roles
-                      </span>
-                      <div class="margin-top-l new-mobile">
-                        <div class="flex flex-wrap mobile-break">
-                          <div class="w-full profile-cols-full bg-grey">
-                            <ng-container>
-                              <ul class="roles-list margin-0">
-                                <li *ngFor="let role of orguserRoles" class="margin-bottom-s">{{role}}</li>
-                              </ul>
-                            </ng-container>
-                          </div>
-                        </div>
-                      </div>
-                    </mat-card-content>
-                  </div>
-                </mat-card>
-              </mat-grid-tile>
-
-              <mat-grid-tile [colspan]="1" [rowspan]="10" class="input-wrapper">
-
-              </mat-grid-tile>
-
-              <mat-grid-tile [colspan]="1" [rowspan]="10" class="input-wrapper">
-                <label class="appr-text-label">Tags</label>
-                <div class="left-input-div">
-                  <div class="flex-col">
-                    <input class="appr-text-field w-full-imp" #tags matInput i18n-placeholder="Type tag here"
-                      placeholder="Type tag here" formControlName="tags" i18n-aria-label aria-label="Enter tag"
-                      [matChipInputFor]="chipListTags" autocomplete="off" maxlength="100"
-                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                      (matChipInputTokenEnd)="addActivity($event)" />
-                    <p class="margin-left-xs">
-                      <mat-error class="hintErr" *ngIf="updateUserDataForm.controls['tags'].errors?.pattern"
-                        i18n="name Error|Explains name is required">
-                        Only space and alphabets are supported
-                      </mat-error>
-                    </p>
-                  </div>
-                </div>
-                <div class="right-input-div">
-                  <button mat-raised-button type="button" [disabled]="!tags.value || !updateUserDataForm.valid"
-                    (click)="addActivity({input: tags, value: tags.value})"
-                    [ngStyle]="{'opacity': updateUserDataForm.valid? 1: 0.7}"
-                    class="text-white btn-add-activity btn-responsive">
-                    <span class="text-white" i18n>Add tag</span>
-                  </button>
-                </div>
-                <mat-chip-list #chipListTags>
-                  <mat-chip *ngFor="let tag of selectedtags" [selectable]="true" [removable]="true"
-                    (removed)="removeActivity(tag)">
-                    {{ tag }}
-                    <mat-icon matChipRemove>cancel</mat-icon>
-                  </mat-chip>
-                </mat-chip-list>
-              </mat-grid-tile>
-            </mat-grid-list>
-          </form>
+        <div class="flex flex-row gap-2">
+          <div class="font-semibold text-base">Mark this user as non-verified</div>
         </div>
       </div>
 
-      <div class="panel-body" *ngIf="!user.editUser">
-        <div class="inner-body mat-body-2">
-          <div class="margin-bottom-m">
-            <span class="font-bold">Primary Details</span> <mat-icon
-              class="ws-mat-black40-text infoicon">info_outline</mat-icon>
+      <form [formGroup]="updateUserDataForm">
+        <div class="grid grid-flow-row sm:grid-flow-col gap-10 grid-col grid-container-25">
+          <!-- <div class="grid-container-25"> -->
+          <div class="flex flex-col gap-1">
+            <label class="info-label required">Designation</label>
+            <mat-form-field class="profile-form-field">
+              <mat-select formControlName="designation" i18n-placeholder
+                (selectionChange)="otherDropDownChange(designation.value, 'designation')">
+                <mat-option value="" disabled>--Select--</mat-option>
+                <mat-option [value]="designation.name" *ngFor="let designation of designationsMeta">
+                  {{designation.name}}
+                </mat-option>
+                <mat-option [value]="'Other'">Other</mat-option>
+              </mat-select>
+            </mat-form-field>
           </div>
-          <mat-grid-list cols="2" rowHeight="60px">
-            <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-              <label class="view-text-label">Designation</label>
-              <p>{{user.profileDetails && user.profileDetails.professionalDetails &&
-                user.profileDetails.professionalDetails.designation ?
-                user.profileDetails.professionalDetails.designation : '-'}}</p>
+          <!-- </div> -->
 
-            </mat-grid-tile>
-
-            <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-              <label class="view-text-label">Group</label>
-              <p>{{user.profileDetails && user.profileDetails.additionalProperties &&
-                user.profileDetails.additionalProperties.group ?
-                user.profileDetails.additionalProperties.group : '-'}}</p>
-
-            </mat-grid-tile>
-          </mat-grid-list>
+          <!-- <div class="grid-container-25"> -->
+          <div class="flex flex-col gap-1">
+            <label class="info-label required">Group</label>
+            <mat-form-field class="profile-form-field">
+              <mat-select formControlName="group"
+                (selectionChange)="otherDropDownChange(designation.value, 'designation')">
+                <mat-option value="" disabled>--Select--</mat-option>
+                <mat-option [value]="designation.name" *ngFor="let designation of designationsMeta">
+                  {{designation.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <!-- </div> -->
         </div>
-        <hr>
-        <div class="inner-body margin-top-m mat-body-2">
-          <div class="margin-bottom-m">
-            <span class="font-bold">Other Details</span> <mat-icon
-              class="ws-mat-black40-text infoicon">info_outline</mat-icon>
+      </form>
+      <div class="break-line"></div>
+      <div class="flex flex-col gap-5">
+        <div class="flex flex-row gap-1 items-center">
+          <div class="text-base font-semibold">Other details</div>
+          <mat-icon class="ws-mat-black40-text">info_outline</mat-icon>
+        </div>
+
+        <div class="grid grid-flow-row sm:grid-flow-col gap-10 grid-col grid-container-33">
+          <div class="flex flex-col gap-1">
+            <label class="info-label required">Employee ID</label>
+            <mat-form-field class="profile-form-field">
+              <input type="text" class="input-text" matInput />
+            </mat-form-field>
           </div>
 
-          <mat-grid-list cols="4" rowHeight="60px">
-            <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-              <label class="view-text-label">Employee ID</label>
-              <p>{{user.empID ? user.empID : '-'}}</p>
-            </mat-grid-tile>
+          <div class="flex flex-col gap-1">
+            <label class="info-label required">Email</label>
+            <mat-form-field class="profile-form-field">
+              <input type="text" class="input-text" matInput />
+            </mat-form-field>
+          </div>
 
-            <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-              <label class="view-text-label">Email</label>
-              <p>{{user.profileDetails && user.profileDetails.personalDetails ?
-                user.profileDetails.personalDetails.primaryEmail : '-'}}</p>
-            </mat-grid-tile>
+          <div class="flex flex-col gap-1">
+            <label class="info-label required">Mobile number</label>
+            <mat-form-field class="profile-form-field">
+              <input type="text" class="input-text" matInput />
+            </mat-form-field>
+          </div>
+        </div>
 
-            <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-              <label class="view-text-label">Mobile Number</label>
-              <p>{{user.profileDetails && user.profileDetails.personalDetails ?
-                user.profileDetails.personalDetails.mobile : '-'}}</p>
-            </mat-grid-tile>
+        <div class="grid grid-flow-row sm:grid-flow-col gap-10 grid-col grid-container-33">
+          <div class="flex flex-col gap-1">
+            <label class="info-label required">Date of Birth</label>
+            <mat-form-field class="profile-form-field">
+              <input type="text" class="input-text" matInput />
+            </mat-form-field>
+          </div>
 
-            <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-              <label class="view-text-label">Gender</label>
-              <p>{{user.profileDetails && user.profileDetails.personalDetails &&
-                user.profileDetails.personalDetails.gender ?
-                user.profileDetails.personalDetails.gender : '-'}}</p>
+          <div class="flex flex-col gap-1">
+            <label class="info-label required">Mother Tongue</label>
+            <mat-form-field class="profile-form-field">
+              <input type="text" class="input-text" matInput />
+            </mat-form-field>
+          </div>
 
-            </mat-grid-tile>
+          <div class="flex flex-col gap-1">
+            <label class="info-label required">Gender</label>
+            <mat-form-field class="profile-form-field">
+              <input type="text" class="input-text" matInput />
+            </mat-form-field>
+          </div>
+        </div>
 
-            <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-              <label class="view-text-label">Date Of Birth</label>
-              <p>{{user.profileDetails && user.profileDetails.personalDetails && user.profileDetails.personalDetails.dob
-                ? user.profileDetails.personalDetails.dob
-                : '-'}}</p>
-            </mat-grid-tile>
+        <div class="grid grid-flow-row sm:grid-flow-col gap-10 grid-col grid-container-33">
 
-            <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-              <label class="view-text-label">Mother Tongue</label>
-              <p>{{user.profileDetails && user.profileDetails.personalDetails &&
-                user.profileDetails.personalDetails.domicileMedium ?
-                user.profileDetails.personalDetails.domicileMedium : '-'}}</p>
-            </mat-grid-tile>
+          <div class="flex flex-col gap-1">
+            <label class="info-label required">Office Pin Code</label>
+            <mat-form-field class="profile-form-field">
+              <input type="text" class="input-text" matInput />
+            </mat-form-field>
+          </div>
 
-            <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-              <label class="view-text-label">Category</label>
-              <p>{{user.profileDetails && user.profileDetails.personalDetails &&
-                user.profileDetails.personalDetails.category ?
-                user.profileDetails.personalDetails.category : '-'}}</p>
-            </mat-grid-tile>
+          <div class="flex flex-col gap-1">
+            <label class="info-label required">eHRMS ID</label>
+            <mat-form-field class="profile-form-field">
+              <input type="text" class="input-text" matInput />
+            </mat-form-field>
+          </div>
 
-            <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-              <label class="view-text-label">Pay Band</label>
-              <p>{{user.profileDetails && user.profileDetails.employmentDetails &&
-                user.profileDetails.employmentDetails.payType ?
-                user.profileDetails.employmentDetails.payType : '-'}}</p>
-            </mat-grid-tile>
+          <div class="flex flex-col gap-1">
+            <label class="info-label required">Category</label>
+            <mat-form-field class="profile-form-field">
+              <input type="text" class="input-text" matInput />
+            </mat-form-field>
+          </div>
 
-            <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-              <label class="view-text-label">Office Pin Code</label>
-              <p>{{user.profileDetails && user.profileDetails.employmentDetails &&
-                user.profileDetails.employmentDetails.pinCode ?
-                user.profileDetails.employmentDetails.pinCode : '-'}}</p>
-            </mat-grid-tile>
+        </div>
 
-            <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-              <label class="view-text-label">eHRMS ID</label>
-              <p>{{user.ehrmsID ? user.ehrmsID : '-'}}</p>
-            </mat-grid-tile>
+        <div class="grid grid-flow-row sm:grid-flow-col gap-10 grid-col grid-container-33">
 
-            <mat-grid-tile [colspan]="2" [rowspan]="1" class="input-wrapper">
-              <label class="view-text-label">Tags</label>
-              <div *ngIf="user.profileDetails && user.profileDetails.additionalProperties &&
-              user.profileDetails.additionalProperties.tag &&
-              user.profileDetails.additionalProperties.tag.length > 0">
-                <ul class="tagslist">
-                  <li *ngFor="let t of user.profileDetails.additionalProperties.tag">{{t}}</li>
-                </ul>
-              </div>
-              <p *ngIf="user.profileDetails && !user.profileDetails.additionalProperties">-</p>
-            </mat-grid-tile>
+          <div class="flex flex-col gap-1">
+            <label class="info-label required">Tags</label>
+            <mat-form-field class="profile-form-field">
+              <input type="text" class="input-text" matInput />
+            </mat-form-field>
+          </div>
+        </div>
 
-            <mat-grid-tile [colspan]="1" [rowspan]="1" class="input-wrapper">
-              <label class="view-text-label">Roles</label>
-              <div *ngIf="user.organisations && user.organisations[0].roles.length > 0">
-                <ul class="roleslist">
-                  <li *ngFor="let t of user.organisations[0].roles">{{t}}
-                  </li>
-                </ul>
-              </div>
-              <p *ngIf="user.organisations && user.organisations[0].roles.length === 0">-</p>
-            </mat-grid-tile>
-          </mat-grid-list>
+        <div class="flex flex-col gap-2">
+          <label class="info-label required">Role</label>
+          <div class="flex flex-wrap gap-3">
+            <div class="flex flex-row gap-2 role-chip"
+              *ngFor="let item of ['admin', 'content_writer', 'content_reader']">
+              {{ item }}
+              <mat-checkbox></mat-checkbox>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-row gap-4">
+          <button class="action-button">Update</button>
+          <button class="outline-button">Cancel</button>
         </div>
       </div>
-    </mat-expansion-panel>
-  </mat-accordion>
-</div>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>
 
 <div class="flex flex-row justify-center">
   <mat-paginator [pageSize]="pageSize" [length]="totalRecords" [pageSizeOptions]="[20,30,40]"

@@ -2,7 +2,6 @@
 @import '~@sunbird-cb/design-system/src/styles/ws-vars';
 @import '~@sunbird-cb/design-system/src/styles/ws-mixins';
 
-
 .circle-s {
   border-radius: 10%;
   width: 24px;
@@ -25,10 +24,7 @@
   }
 }
 
-.circle-m {
-  border-radius: 10%;
-  width: 40px !important;
-  height: 40px !important;
+.common-circle-css {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -42,9 +38,16 @@
   .initials {
     color: #ffffff;
     font-size: 14px;
-    line-height: 19px;
+    line-height: 18px;
     letter-spacing: 0.2625px;
   }
+}
+
+.circle-m {
+  border-radius: 10%;
+  width: 40px !important;
+  height: 40px !important;
+  @extend .common-circle-css;
 }
 
 .circle-l {

@@ -133,7 +133,7 @@ export class UserCardComponent implements OnInit {
     })
   }
 
-  getUseravatarName(user: any) {
+  getUserAvatarName(user: any) {
     let name = ''
     if (user && user.profileDetails && user.profileDetails.personalDetails.firstname) {
       name = `${user.profileDetails.personalDetails.firstname}`
@@ -203,5 +203,11 @@ export class UserCardComponent implements OnInit {
 
   onSearch(event: any) {
     this.searchByEnterKey.emit(event)
+  }
+
+  handleFormatName(nameStr: string): string {
+    let name = nameStr.toLowerCase()
+    name = name.split(' ').map((elem: string) => elem.charAt(0).toUpperCase() + elem.substring(1)).join(' ')
+    return name
   }
 }
