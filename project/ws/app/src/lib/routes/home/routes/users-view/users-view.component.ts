@@ -82,7 +82,7 @@ export class UsersViewComponent implements OnInit, OnDestroy {
     // this.usersData = _.get(this.route, 'snapshot.data.usersList.data') || {}
     // this.filterData()
 
-    this.usersService.getFilterDataObject.subscribe((data: any) => {
+    this.usersService.getFilterDataObject.subscribe((_data: any) => {
       // console.log('data - ', data)
     })
   }
@@ -114,7 +114,7 @@ export class UsersViewComponent implements OnInit, OnDestroy {
     return this.sanitizer.bypassSecurityTrustHtml(html)
   }
 
-  openVideoPopup() {
+  handleOpenVideoPopup() {
     this.dialog.open(ReportsVideoComponent, {
       data: {
         videoLink: 'https://www.youtube.com/embed/tgbNymZ7vqY?autoplay=1&mute=1',

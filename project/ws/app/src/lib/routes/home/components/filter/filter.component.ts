@@ -79,7 +79,7 @@ export class FilterComponent implements OnInit, AfterContentChecked {
     this.usersSvc.clearFilter.subscribe((result: any) => {
       if (result && result.status) {
         this.from = result.from
-        this.clearFilter()
+        this.handleClearFilter()
       }
     })
     this.resetFilter()
