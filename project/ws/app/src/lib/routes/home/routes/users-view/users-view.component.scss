@@ -2,8 +2,32 @@
 @import 'ws-vars';
 @import 'ws-mixins';
 
-.flex-4 {
-  flex: 4;
+.container {
+  box-shadow: 0px 1px 5px 0px #0000001F, 0px 2px 2px 0px #00000024, 0px 3px 1px -2px #00000033;
+  padding: 24px;
+  border: 1px solid $border-color;
+
+  .infoIcon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.reports-demo-video {
+  width: 200px;
+  height: 140px;
+  border-radius: 4px;
+  background-color: #FDEAD5;
+  font-weight: 600;
+  pointer-events: all;
+  cursor: pointer;
+
+  .video-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 32px;
+  }
 }
 
 .mob {
@@ -273,21 +297,7 @@ a:not([href]):not([tabindex]) {
   font-size: 14px;
 }
 
-.reportsDemo {
-  .reportsDemoVideo {
-    width: 200px;
-    height: 140px;
-    border-radius: 5px;
-    background-color: #FDEAD5;
-    font-weight: 600;
-    pointer-events: all;
-    cursor: pointer;
 
-    .video_icon {
-      font-size: 32px;
-    }
-  }
-}
 
 .no-border {
   border: 0;
