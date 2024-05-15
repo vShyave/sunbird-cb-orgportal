@@ -1,14 +1,5 @@
 <div class="flex flex-4 flex-column main-flex-box">
   <mat-card class="no-border">
-    <!-- <mat-card-header class="flex-custom-m">
-      <div class="flex-1" role="link" tabindex="0">
-        <div class="flex flex-1">
-          <mat-card-title class="flex-4 mobile-margin text-capitalize">
-            <span class="h-600-s-20-m color-87">Users</span>
-          </mat-card-title>
-        </div>
-      </div>
-    </mat-card-header> -->
     <mat-card-title class="flex-4 mobile-margin text-capitalize margin-bottom-l">
       <span class="h-600-s-20-m color-87">Users</span>
     </mat-card-title>
@@ -73,7 +64,7 @@
       </div>
       <!-- <ws-widget-org-user-table-v2 [userId]="currentUser" [tableData]="tabledata" [data]="dataForTable"
         [isUpload]=false [isCreate]=true (eOnButtonClick)="clickHandler($event)" (actionsClick)="menuActions($event)"
-        (searchByEnterKey)="onEnterkySearch($event)" (pageChangeClick)="onPaginateChange($event)"
+        (searchByEnterKey)="handleOnEnterKeySearch($event)" (pageChangeClick)="onPaginateChange($event)"
         [showEditOnCondition]=true [totalRecords]="userDataTotalCount" [tabChangeIndex]="pageIndex">
       </ws-widget-org-user-table-v2> -->
 
@@ -81,7 +72,7 @@
         <!-- <div *ngIf="activeUsersDataCount > 0"> -->
         <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="activeUsersData"
           [totalRecords]="activeUsersDataCount" [tabChangeIndex]="pageIndex" [isApprovals]="false"
-          (searchByEnterKey)="onEnterkySearch($event)"
+          (searchByEnterKey)="handleOnEnterKeySearch($event)"
           (paginationData)="onPaginateChange($event)"></ws-widget-user-card>
         <!-- </div> -->
         <!-- <p class="margin-top-l margin-bottom-l" *ngIf="activeUsersDataCount === 0">No users found</p> -->
@@ -90,7 +81,7 @@
         <!-- <div *ngIf="verifiedUsersDataCount > 0"> -->
         <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="verifiedUsersData"
           [totalRecords]="verifiedUsersDataCount" [tabChangeIndex]="pageIndex"
-          (searchByEnterKey)="onEnterkySearch($event)"
+          (searchByEnterKey)="handleOnEnterKeySearch($event)"
           (paginationData)="onPaginateChange($event)"></ws-widget-user-card>
         <!-- </div> -->
         <!-- <p class="margin-top-l margin-bottom-l" *ngIf="verifiedUsersDataCount === 0">No users found</p> -->
@@ -99,7 +90,7 @@
         <!-- <div *ngIf="nonverifiedUsersDataCount > 0"> -->
         <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="nonverifiedUsersData"
           [totalRecords]="nonverifiedUsersDataCount" [tabChangeIndex]="pageIndex"
-          (searchByEnterKey)="onEnterkySearch($event)"
+          (searchByEnterKey)="handleOnEnterKeySearch($event)"
           (paginationData)="onPaginateChange($event)"></ws-widget-user-card>
         <!-- </div> -->
         <!-- <p class="margin-top-l margin-bottom-l" *ngIf="nonverifiedUsersDataCount === 0">No users found</p> -->
@@ -108,7 +99,7 @@
         <div *ngIf="usersData?.count > 0">
           <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="usersData"
             [totalRecords]="notmyuserUsersDataCount" [tabChangeIndex]="pageIndex"
-            (searchByEnterKey)="onEnterkySearch($event)"
+            (searchByEnterKey)="handleOnEnterKeySearch($event)"
             (paginationData)="onPaginateChange($event)"></ws-widget-user-card>
         </div>
         <p class="margin-top-l margin-bottom-l" *ngIf="usersData?.count === 0">No users found</p>

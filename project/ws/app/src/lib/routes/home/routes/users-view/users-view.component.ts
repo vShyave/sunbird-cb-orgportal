@@ -1,19 +1,22 @@
 import { Component, OnDestroy, OnInit } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
+import { PageEvent } from '@angular/material'
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
 /* tslint:disable */
 import _ from 'lodash'
 /* tslint:enable */
-// import { environment } from 'src/environments/environment'
-import { PageEvent } from '@angular/material'
+import { takeUntil } from 'rxjs/operators'
+import { Subject } from 'rxjs'
+
 import { EventService } from '@sunbird-cb/utils'
 import { NsContent } from '@sunbird-cb/collection'
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
 import { NSProfileDataV2 } from '../../models/profile-v2.model'
+
 import { UsersService } from '../../../users/services/users.service'
 import { LoaderService } from '../../../../../../../../../src/app/services/loader.service'
 import { TelemetryEvents } from '../../../../head/_services/telemetry.event.model'
-// import { ProfileV2UtillService } from '../../services/home-utill.service'
+
 import { ReportsVideoComponent } from '../reports-video/reports-video.component'
 
 @Component({
@@ -24,12 +27,14 @@ import { ReportsVideoComponent } from '../reports-video/reports-video.component'
   host: { class: 'flex flex-col' },
   /* tslint:enable */
 })
+
 export class UsersViewComponent implements OnInit, OnDestroy {
   /* tslint:disable */
   Math: any
   /* tslint:enable */
+
+  private destroySubject$ = new Subject()
   currentFilter = 'allusers'
-  // filterPath = '/app/home/users'
   discussionList!: any
   discussProfileData!: any
   portalProfile!: NSProfileDataV2.IProfile
@@ -37,7 +42,6 @@ export class UsersViewComponent implements OnInit, OnDestroy {
   location!: string | null
   tabs: any
   isLoading = false
-  // tabsData: NSProfileDataV2.IProfileTab[]
   currentUser!: any
   connectionRequests!: any[]
   data: any = []
@@ -66,17 +70,9 @@ export class UsersViewComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private route: ActivatedRoute,
     private router: Router,
-    // private snackBar: MatSnackBar,
     private events: EventService,
     private loaderService: LoaderService,
-    // private profileUtilSvc: ProfileV2UtillService,
     private sanitizer: DomSanitizer,
-    // private telemetrySvc: TelemetryService,
-    // private configSvc: ConfigurationsService,
-    // private discussService: DiscussService,
-    // private configSvc: ConfigurationsService,
-    // private networkV2Service: NetworkV2Service,
-    // private profileV2Svc: ProfileV2Service
     private usersService: UsersService
   ) {
     this.Math = Math
@@ -85,13 +81,12 @@ export class UsersViewComponent implements OnInit, OnDestroy {
 
     // this.usersData = _.get(this.route, 'snapshot.data.usersList.data') || {}
     // this.filterData()
+
+    this.usersService.getFilterDataObject.subscribe((data: any) => {
+      // console.log('data - ', data)
+    })
   }
 
-  ngOnDestroy() {
-    // if (this.tabs) {
-    //   this.tabs.unsubscribe()
-    // }
-  }
   ngOnInit() {
     this.currentFilter = this.route.snapshot.params['tab'] || 'allusers'
     this.rootOrgId = _.get(this.route.snapshot.parent, 'data.configService.unMappedUser.rootOrg.rootOrgId')
@@ -127,7 +122,7 @@ export class UsersViewComponent implements OnInit, OnDestroy {
       disableClose: true,
       width: '50%',
       height: '60%',
-      panelClass: 'overflow-visable',
+      panelClass: 'overflow-visible',
     })
   }
 
@@ -196,52 +191,54 @@ export class UsersViewComponent implements OnInit, OnDestroy {
   async getAllUsers(query: string) {
     this.loaderService.changeLoad.next(true)
     // const usersData: any[] = []
-    const filtreq = {
+    const filterReq = {
       rootOrgId: this.rootOrgId,
       status: 1,
     }
 
-    this.usersService.getAllKongUsers(filtreq, this.limit, this.pageIndex, query).subscribe((data: any) => {
-      const allusersData = data.result.response
-      // if (allusersData && allusersData.content && allusersData.content.length > 0) {
-      //   _.filter(allusersData.content, { isDeleted: false }).forEach((user: any) => {
-      //     // tslint:disable-next-line
-      //     const org = { roles: _.get(_.first(_.filter(user.organisations,
-      // { organisationId: _.get(this.configSvc, 'unMappedUser.rootOrg.id') })), 'roles') }
-      //     usersData.push({
-      //       fullname: user ? `${user.firstName}` : null,
-      //       // fullname: user ? `${user.firstName} ${user.lastName}` : null,
-      //       email: user.personalDetails && user.personalDetails.primaryEmail ?
-      //         this.profileUtilSvc.emailTransform(user.personalDetails.primaryEmail) : this.profileUtilSvc.emailTransform(user.email),
-      //       role: org.roles || [],
-      //       userId: user.id,
-      //       active: !user.isDeleted,
-      //       blocked: user.blocked,
-      //       roles: _.join(_.map((org.roles || []), i => `<li>${i}</li>`), ''),
-      //       orgId: user.rootOrgId,
-      //       orgName: user.rootOrgName,
-      //       allowEditUser: this.showEditUser(org.roles),
-      //     })
-      //   })
+    this.usersService.getAllKongUsers(filterReq, this.limit, this.pageIndex, query)
+      .pipe(takeUntil(this.destroySubject$))
+      .subscribe((data: any) => {
+        const allUsersData = data.result.response
+        // if (allusersData && allusersData.content && allusersData.content.length > 0) {
+        //   _.filter(allusersData.content, { isDeleted: false }).forEach((user: any) => {
+        //     // tslint:disable-next-line
+        //     const org = { roles: _.get(_.first(_.filter(user.organisations,
+        // { organisationId: _.get(this.configSvc, 'unMappedUser.rootOrg.id') })), 'roles') }
+        //     usersData.push({
+        //       fullname: user ? `${user.firstName}` : null,
+        //       // fullname: user ? `${user.firstName} ${user.lastName}` : null,
+        //       email: user.personalDetails && user.personalDetails.primaryEmail ?
+        //         this.profileUtilSvc.emailTransform(user.personalDetails.primaryEmail) : this.profileUtilSvc.emailTransform(user.email),
+        //       role: org.roles || [],
+        //       userId: user.id,
+        //       active: !user.isDeleted,
+        //       blocked: user.blocked,
+        //       roles: _.join(_.map((org.roles || []), i => `<li>${i}</li>`), ''),
+        //       orgId: user.rootOrgId,
+        //       orgName: user.rootOrgName,
+        //       allowEditUser: this.showEditUser(org.roles),
+        //     })
+        //   })
 
-      //   usersData.sort((a: any, b: any) => {
-      //     const textA = a.fullname.toUpperCase()
-      //     const textB = b.fullname.toUpperCase()
-      //     return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-      //   })
-      // }
-      this.activeUsersData = allusersData.content
-      this.activeUsersDataCount = data.result.response.count
-    })
+        //   usersData.sort((a: any, b: any) => {
+        //     const textA = a.fullname.toUpperCase()
+        //     const textB = b.fullname.toUpperCase()
+        //     return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+        //   })
+        // }
+        this.activeUsersData = allUsersData.content
+        this.activeUsersDataCount = data.result.response.count
+      })
   }
   async getVUsers(query: string) {
     this.loaderService.changeLoad.next(true)
-    const filtreq = {
+    const filterReq = {
       rootOrgId: this.rootOrgId,
       'profileDetails.profileStatus': 'VERIFIED',
     }
 
-    this.usersService.getAllKongUsers(filtreq, this.limit, this.pageIndex, query).subscribe((data: any) => {
+    this.usersService.getAllKongUsers(filterReq, this.limit, this.pageIndex, query).subscribe((data: any) => {
       const allusersData = data.result.response
       this.verifiedUsersData = allusersData.content
       this.verifiedUsersDataCount = data.result.response.count
@@ -250,12 +247,12 @@ export class UsersViewComponent implements OnInit, OnDestroy {
 
   async getNVUsers(query: string) {
     this.loaderService.changeLoad.next(true)
-    const filtreq = {
+    const filterReq = {
       rootOrgId: this.rootOrgId,
       'profileDetails.profileStatus': 'NOT-VERIFIED',
     }
 
-    this.usersService.getAllKongUsers(filtreq, this.limit, this.pageIndex, query).subscribe((data: any) => {
+    this.usersService.getAllKongUsers(filterReq, this.limit, this.pageIndex, query).subscribe((data: any) => {
       const allusersData = data.result.response
       this.nonverifiedUsersData = allusersData.content
       this.nonverifiedUsersDataCount = data.result.response.count
@@ -304,7 +301,7 @@ export class UsersViewComponent implements OnInit, OnDestroy {
     )
   }
 
-  onEnterkySearch(enterValue: any) {
+  handleOnEnterKeySearch(enterValue: any) {
     this.searchQuery = enterValue
     this.filterData(this.searchQuery)
   }
@@ -313,5 +310,9 @@ export class UsersViewComponent implements OnInit, OnDestroy {
     this.pageIndex = event.pageIndex
     this.limit = event.pageSize
     this.filterData(this.searchQuery)
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.unsubscribe()
   }
 }

@@ -102,5 +102,9 @@ export class SearchComponent implements OnInit {
     this.handleapproveAll.emit()
   }
 
+  handleHideFilter(): void {
+    this.filterVisibilityFlag = false
+  }
+
   sort() { }
 }

@@ -3,7 +3,9 @@
         <div class="filter-header flex flex-1">
             <div class="flex flex-2 flex-row">
                 <div class="label">Filters</div>
-                <div class="cross-filter cursor-pointer" (click)="hideFilter()"><img src="assets/icons/close.svg"></div>
+                <div class="cross-filter cursor-pointer" (click)="hideFilter()">
+                    <img src="assets/icons/close.svg">
+                </div>
             </div>
         </div>
         <div class="filter-content-container">
@@ -41,10 +43,10 @@
         </div>
         <div class="filter-footer flex flex-1">
             <div class="flex flex-2 flex-row">
-                <div class="filter-clear" (click)="clearFilter()">
+                <div class="filter-clear" (click)="handleClearFilter()">
                     Clear
                 </div>
-                <div class="filter-apply" (click)="applyFilter()">
+                <div class="filter-apply" (click)="handleApplyFilter()">
                     Apply
                 </div>
             </div>

@@ -2,46 +2,36 @@
   class="mat-elevation-z3 custom mobile">
   <div class="fix-ww" id="root-tool-bar" title="toolbar" i18n-aria-label role="toolbar">
     <ng-container *ngIf="mode === 'top'">
-      <a routerLink="/app/home" class="logo-dim" role="link" title="Home" i18n-aria-title i18n-aria-label>
+      <a routerLink="/app/home" class="flex items-center" role="link" title="Home" i18n-aria-title i18n-aria-label>
         <img [src]="appIcon" alt="Application Logo" class="app-logo" />
-      </a> <span class="vertical-seperator"></span>
-      <div class="flex flex-middle"><span>MDO portal</span></div>
-      <!-- <span class="spacer"></span> -->
+      </a>
+      <div class="vertical-seperator"></div>
+      <div class="flex flex-middle">
+        <span>MDO portal</span>
+      </div>
       <ng-container *ngIf="primaryNavbarConfig?.mediumScreen">
         <ng-container [ngTemplateOutlet]="navbarSide" [ngTemplateOutletContext]="{ item: item }"
           *ngFor="let item of primaryNavbarConfig?.mediumScreen?.left">
         </ng-container>
 
-        <!-- <ws-app-search-input-home placeHolder="Search" class="my-search flex-1" [ref]="'home'">
-        </ws-app-search-input-home> -->
         <span class="spacer"></span>
         <div ngClass="search-small-logo">
           <ng-container [wsResolverWidget]="{
-        'widgetType': 'actionButton',
-        'widgetSubType': 'buttonFeature',
-        'widgetData': {
-          'toolTop': 'Search',
-          'actionBtnId': 'feature_search',
-          'config': {
-            'type': 'mat-icon-button'
-          }
-        }
-      }"></ng-container>
+            'widgetType': 'actionButton',
+            'widgetSubType': 'buttonFeature',
+            'widgetData': {
+              'toolTop': 'Search',
+              'actionBtnId': 'feature_search',
+              'config': {
+                'type': 'mat-icon-button'
+              }
+            }
+          }"></ng-container>
         </div>
-        <!-- <button class="home-help" mat-icon-button id='helper' [matMenuTriggerFor]="helpMenu" *ngIf="!isHelpMenuRestricted"
-        >
-        <mat-icon>help_outline</mat-icon>
-      </button> -->
-        <!-- {{primaryNavbarConfig?.mediumScreen?.right | json}} -->
         <ng-container [ngTemplateOutlet]="navbarSide" [ngTemplateOutletContext]="{ item: item }"
           *ngFor="let item of primaryNavbarConfig?.mediumScreen?.right">
         </ng-container>
-        <!-- <div class="mat-icon-button pipe-icon">
-        |
-      </div> -->
-        <!-- <ng-container [wsResolverWidget]="btnAppsConfig"></ng-container> -->
       </ng-container>
-
     </ng-container>
     <div class="flex justify-between items-center w-full" *ngIf="mode === 'bottom'">
       <ng-container *ngIf="primaryNavbarConfig?.smallScreen">

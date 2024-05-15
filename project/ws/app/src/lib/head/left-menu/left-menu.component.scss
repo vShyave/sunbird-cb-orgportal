@@ -3,8 +3,8 @@
 ::ng-deep .nav-container .mat-drawer-inner-container {
   background: #F0F3F4;
   border: 1px #F0F3F4 solid;
-  width: 99%;
-  height: 99%;
+  width: 100%;
+  height: 100%;
   overflow: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -20,8 +20,7 @@
 }
 
 .min-wid {
-  min-width: 247px;
-
+  min-width: 248px;
 }
 
 .outline-1 {
@@ -34,7 +33,7 @@
 
 .dept-logo-block {
   width: 88px;
-  height: 86px;
+  height: 88px;
   background: white;
   border-radius: 4px;
   border: 1px rgba(0, 0, 0, 0.16) solid;
@@ -43,33 +42,28 @@
   .img-logo {
     width: 72px;
     height: 72px;
-    // height: 74px;
-  }
-
-  .dept-name {
-    color: rgba(0, 0, 0, 0.87);
-    font-size: 14px;
-    font-family: Lato;
-    font-weight: 700;
-    word-wrap: break-word;
   }
 }
 
-::ng-deep .nav-list-menu {
+.dept-name {
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 16px;
+  font-family: Lato;
+  font-weight: bold;
+  word-wrap: break-word;
+}
+
+::ng-deep.nav-list-menu {
   padding-top: 0 !important;
 
   .menu-item-a {
     background-color: rgb(255, 255, 255);
     position: relative;
-
-    .mat-list-item-content {
-      padding: 12px 16px 12px 32px !important;
-    }
   }
-}
 
-.main-menuitem {
-  background: transparent !important;
+  .mat-list-item-content {
+    padding: 16px 24px !important;
+  }
 }
 
 .mat-nav-list a:not(:first-child) {
@@ -83,47 +77,48 @@
   height: inherit;
 }
 
-.max-width {
-  width: 190px;
+::ng-deep .custom-left-menu .mat-expansion-panel:not([class*=mat-elevation-z]) {
+  background: transparent !important;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04) !important;
+  }
 }
 
-// ::ng-deep .menuPannel.mat-expansion-panel-spacing:first-child,
-// .mat-accordion>:first-child:not(.mat-expansion-panel) .mat-expansion-panel-spacing {
-//   margin: unset !important;
-// }
-
-::ng-deep .custom-leftmenu .mat-expansion-panel:not([class*=mat-elevation-z]) {
-    background: transparent !important;
-    margin-bottom: 8px !important;
-}
-
-
-::ng-deep .menuPannel.mat-expansion-panel {
+::ng-deep .menuPanel {
   border-radius: unset !important;
   box-shadow: none !important;
+  margin-bottom: 0.6em;
 
   .mat-expansion-panel-body {
     padding: 0 !important;
+
+    .mat-list-base {
+      margin-bottom: 0px !important;
+
+      .mat-list-item-content {
+        margin-left: 16px;
+      }
+    }
   }
 }
 
 ::ng-deep .mat-expansion-panel-header.mat-expanded:hover {
   background: rgba(0, 0, 0, 0.04) !important;
-
 }
 
 ::ng-deep .mat-expansion-panel-spacing {
   margin: 0 !important;
 }
 
-::ng-deep .menuPannel .mat-expansion-panel-header {
-  padding: 8px 24px !important;
+::ng-deep .menuPanel .mat-expansion-panel-header {
+  padding: 12px 24px !important;
   height: unset !important;
   background: transparent !important;
-  font: 400 16px/24px Lato !important;
+  font: 400 14px/24px Lato !important;
 }
 
-::ng-deep .menuPannel .mat-expansion-panel-header .mat-expansion-panel-header-title {
+::ng-deep .menuPanel .mat-expansion-panel-header .mat-expansion-panel-header-title {
   justify-content: space-between;
   margin-right: 0;
 
@@ -133,6 +128,3 @@
     width: 100%;
   }
 }
-
-// <div style="width: 100%; height: 100%; padding: 16px; background: rgba(0, 0, 0, 0.04); justify-content: center; align-items: center; gap: 8px; display: inline-flex"><div style="flex: 1 1 0; color: black; font-size: 14px; font-family: Lato; font-weight: 700; word-wrap: break-word">Curate</div><div style="width: 24px; height: 24px; justify-content: center; align-items: center; display: flex"><div style="width: 24px; height: 24px; position: relative"><div style="width: 24px; height: 24px; left: 0px; top: 0px; position: absolute; opacity: 0; background: #D8D8D8"></div><div style="width: 10px; height: 5px; left: 7px; top: 15px; position: absolute; background: rgba(0, 0, 0, 0.60)"></div></div></div>
-// </div>

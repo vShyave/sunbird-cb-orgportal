@@ -16,6 +16,7 @@ export class FilterComponent implements OnInit, AfterContentChecked {
   @Output() toggleFilter = new EventEmitter()
   // @Output() getFilterData = new EventEmitter()
   @Input() from: any
+  @Output() hideFilterDiv = new EventEmitter<boolean>()
   designationList: any = []
   providersList: any[] = []
   selectedProviders: any[] = []
@@ -117,8 +118,9 @@ export class FilterComponent implements OnInit, AfterContentChecked {
   // }
 
   hideFilter() {
-    // this.toggleFilter.emit(false)
+    this.hideFilterDiv.emit(true)
     this.usersSvc.filterToggle.next({ from: '', status: false })
+
   }
 
   checkedProviders(event: any, item: any) {
@@ -274,7 +276,7 @@ export class FilterComponent implements OnInit, AfterContentChecked {
 
   }
 
-  applyFilter() {
+  handleApplyFilter() {
     if (this.from === 'content') {
       // this.getFilterData.emit(this.filterObj)
       this.usersSvc.getFilterDataObject.next(this.filterObj)
@@ -283,9 +285,12 @@ export class FilterComponent implements OnInit, AfterContentChecked {
       // this.getFilterData.emit(this.assigneeFilterObj)
     }
     this.usersSvc.filterToggle.next({ from: '', status: false })
+    this.handleClearFilter()
+    this.hideFilter()
+
   }
 
-  clearFilter() {
+  handleClearFilter() {
     if (this.from === 'content') {
       this.filterObj = { competencyArea: [], competencyTheme: [], competencySubTheme: [], providers: [] }
       this.selectedProviders = []
