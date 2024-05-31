@@ -31,6 +31,8 @@ const API_END_POINTS = {
   GET_GROUPS: '/api/user/v1/groups',
   getMasterNationlity: '/apis/protected/v8/user/profileRegistry/getMasterNationalities',
   editProfileDetails: '/apis/proxies/v8/user/v1/extPatch',
+  getPendingFields: '/apis/proxies/v8/workflow/v2/userWFApplicationFieldsSearch',
+  getApprovalPendingFields: '/apis/proxies/v8/workflow/v2/userWFApplicationFieldsSearch',
 }
 
 @Injectable()
@@ -237,5 +239,26 @@ export class UsersService {
 
   editProfileDetails(data: any) {
     return this.http.post<any>(API_END_POINTS.editProfileDetails, data)
+  }
+
+  listApprovalPendingFields() {
+    return this.http.post<any>(API_END_POINTS.getPendingFields, {
+      serviceName: 'profile',
+      applicationStatus: 'SEND_FOR_APPROVAL',
+    })
+  }
+
+  fetchApprovalPendingFields() {
+    return this.http.post<any>(API_END_POINTS.getApprovalPendingFields, {
+      serviceName: 'profile',
+      applicationStatus: 'SEND_FOR_APPROVAL',
+    })
+  }
+
+  listRejectedFields() {
+    return this.http.post<any>(API_END_POINTS.getPendingFields, {
+      serviceName: 'profile',
+      applicationStatus: 'REJECTED',
+    })
   }
 }

@@ -30,7 +30,7 @@
             (dblclick)="$event.preventDefault()">
             <img src="/assets/icons/csv-file.svg" alt="CSV file logo" />
           </div>
-          <div *ngIf="showFileError" class="error-msg">Upload xsls format file only</div>
+          <div *ngIf="showFileError" class="error-msg">Upload xlsx format file only</div>
           <div class="flex flex-col items-center">
             <div class="text-primary cursor-pointer" (click)="fileInput.click()" (dblclick)="$event.preventDefault()">
               Browse files</div>
@@ -41,7 +41,7 @@
           </div>
           <div class="flex flex-col items-center margin-bottom-m">
             <div class="flex">Max file size: 100 MB</div>
-            <div class="flex">Supported file types: xsls</div>
+            <div class="flex">Supported file types: xlsx</div>
           </div>
         </div>
       </div>
@@ -50,16 +50,16 @@
 
   <div class="text-base font-bold">File logs</div>
   <div class="flex flex-col gap-6">
-    <div class="file-container" *ngFor="let list of lastUploadList | orderBy:'datecreatedon':'desc'">
+    <div class="file-container"
+      *ngFor="let list of lastUploadList | slice : startIndex : lastIndex | orderBy:'datecreatedon':'desc'">
       <div class="flex flex-col gap-4">
         <div class="flex flex-row justify-between items-center">
           <div class="flex flex-row gap-1">
             <div class="font-bold">File Information</div>
           </div>
-          <div class="flex flex-row gap-2 outline-button items-center" *ngIf="list?.status !== 'SUCCESSFUL'"
-            (click)="handleDownloadFile(list)">
+          <div class="flex flex-row gap-2 outline-button items-center" (click)="handleDownloadFile(list)">
             <mat-icon>download_2</mat-icon>
-            Download error log
+            {{ list?.status !== 'SUCCESSFUL' ? 'Download error log' : 'Download file' }}
           </div>
         </div>
         <div class="grid grid-flow-row sm:grid-flow-col gap-10 grid-col grid-container-25">
@@ -90,7 +90,7 @@
             <div class="value">{{ list?.datecreatedon | date: 'dd MMM yyyy h:mm a' }}</div>
           </div>
           <div class="flex flex-col">
-            <div class="label">Completed ON</div>
+            <div class="label">Completed On</div>
             <div class="value">{{ list?.dateupdatedon | date: 'dd MMM yyyy h:mm a' }}</div>
           </div>
         </div>
@@ -101,6 +101,7 @@
   <div class="flex flex-row justify-end mt-4">
     <mat-paginator [pageSize]="pageSize" [length]="lastUploadList.length" [pageSizeOptions]="sizeOptions"
       (page)="handleChangePage($event)"></mat-paginator>
+
   </div>
 
 

@@ -318,11 +318,12 @@ label {
   color: #666 !important;
 }
 ::ng-deep .mat-dialog-container {
-  padding: 0 !important;
+  //padding: 0 !important;
   overflow: unset !important;
 }
 
 .rejectdialog {
+  margin: -24px;
   .mat-dialog-title {
     background: #1b4ca1;
     color: #fff;
@@ -345,4 +346,20 @@ label {
 
 .word-wrap {
   word-wrap: break-word;
+}
+
+.userName {
+  max-width: calc(100% - 100px);
+}
+.country-code {
+    padding: 6px 0;
+    text-align: center;
+    width: 46px;
+    height: 26px;
+    display: inline-block;
+    position: relative;
+    top: -2px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, .14);
+    font-family: Lato;
 }

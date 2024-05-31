@@ -103,17 +103,17 @@
             mat-button (click)="filter('nonverified'); tabTelemetry('nonverified', 0)" role="button">Non-verified
             ({{nonverifiedUsersDataCount}})</a>
 
-          <a routerLink="/app/home/users/notmyuser" routerLinkActive="router-link-active" class="filter-option"
+          <!-- <a routerLink="/app/home/users/notmyuser" routerLinkActive="router-link-active" class="filter-option"
             [ngClass]="{'ws-mat-accent-border-active' : currentFilter === 'notmyuser','ws-mat-accent-border font-medium':currentFilter !== 'notmyuser'}"
             mat-button (click)="filter('notmyuser'); tabTelemetry('notmyuser', 0)" role="button">Not my user
-            ({{notmyuserUsersDataCount}})</a>
+            ({{notmyuserUsersDataCount}})</a> -->
         </div>
       </div>
       <ng-container *ngIf="currentFilter === 'allusers'">
         <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="activeUsersData"
           [totalRecords]="activeUsersDataCount" [tabChangeIndex]="pageIndex" [isApprovals]="false"
           (searchByEnterKey)="onEnterkySearch($event)" (paginationData)="onPaginateChange($event)"
-          (updateList)="getUsers('')"></ws-widget-user-card>
+          (updateList)="getAllUsers('')"></ws-widget-user-card>
       </ng-container>
       <ng-container *ngIf="currentFilter === 'verified'">
         <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="verifiedUsersData"

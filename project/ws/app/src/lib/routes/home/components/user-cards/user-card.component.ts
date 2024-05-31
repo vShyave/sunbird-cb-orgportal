@@ -74,11 +74,11 @@ export class UserCardComponent implements OnInit, OnChanges {
   separatorKeysCodes: number[] = [ENTER, COMMA]
   namePatern = `^[a-zA-Z ]*$`
   orgTypeList: any = []
-  public countryCodes: string[] = []
+  // public countryCodes: string[] = []
   masterLanguages: Observable<any[]> | undefined
   masterLanguagesEntries: any
   genderList = ['Male', 'Female', 'Others']
-  categoryList = ['General', 'OBC', 'SC', 'ST', 'Others']
+  categoryList = ['General', 'OBC', 'SC', 'ST']
   // needApprovalList: any[] = []
   profileData: any[] = []
   userwfData!: any
@@ -90,6 +90,7 @@ export class UserCardComponent implements OnInit, OnChanges {
   emailRegix = `^[\\w\-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$`
   pincodePattern = '(^[0-9]{6}$)'
   yearPattern = '(^[0-9]{4}$)'
+  empIDPattern = `^[a-z0-9]+$`
 
   userGroup: any
 
@@ -111,13 +112,13 @@ export class UserCardComponent implements OnInit, OnChanges {
               private route: ActivatedRoute, private snackBar: MatSnackBar,
               private events: EventService) {
     this.updateUserDataForm = new FormGroup({
-      designation: new FormControl('', [Validators.required]),
+      designation: new FormControl('', []),
       group: new FormControl('', [Validators.required]),
-      employeeID: new FormControl('', []),
+      employeeID: new FormControl('', [Validators.pattern(this.empIDPattern)]),
       ehrmsID: new FormControl({ value: '', disabled: true }, []),
       dob: new FormControl('', []),
       primaryEmail: new FormControl('', [Validators.required, Validators.email, Validators.pattern(this.emailRegix)]),
-      countryCode: new FormControl('+91', [Validators.required]),
+      // countryCode: new FormControl('+91', []),
       mobile: new FormControl('', [Validators.required, Validators.pattern(this.phoneNumberPattern)]),
       tags: new FormControl('', [Validators.pattern(this.namePatern)]),
       roles: new FormControl('', [Validators.required]),
@@ -142,7 +143,7 @@ export class UserCardComponent implements OnInit, OnChanges {
     }
 
     if (this.usersData && this.usersData.length > 0) {
-      this.usersData = _.orderBy(this.usersData, item => item.firstName, ['asc'])
+      this.usersData = _.orderBy(this.usersData, item => item.firstName.toUpperCase(), ['asc'])
 
       // formatting profileStatusUpdatedOn value
       this.usersData.forEach((u: any) => {
@@ -190,7 +191,7 @@ export class UserCardComponent implements OnInit, OnChanges {
     if (this.usersData) {
       this.usersData = _.orderBy(this.usersData, item => {
         if (item.profileDetails && item.profileDetails.personalDetails) {
-          return item.profileDetails.personalDetails.firstname
+          return item.profileDetails.personalDetails.firstname.toUpperCase()
         }
         // tslint:disable-next-line
       }, ['asc'])
@@ -268,7 +269,8 @@ export class UserCardComponent implements OnInit, OnChanges {
     await this.loadDesignations()
     await this.loadGroups()
     await this.loadLangauages()
-    await this.loadCountryCodes()
+    // await this.loadCountryCodes()
+    await this.loadRoles()
   }
 
   async loadDesignations() {
@@ -300,19 +302,26 @@ export class UserCardComponent implements OnInit, OnChanges {
       })
   }
 
-  async loadCountryCodes() {
-    this.usersSvc.getMasterNationlity().subscribe((data: any) => {
-      data.nationality.map((item: any) => {
-        this.countryCodes.push(item.countryCode)
-      })
+  // async loadCountryCodes() {
+  //   this.usersSvc.getMasterNationlity().subscribe((data: any) => {
+  //     data.nationality.map((item: any) => {
+  //       this.countryCodes.push(item.countryCode)
+  //     })
 
-      this.updateUserDataForm.patchValue({
-        countryCode: '+91',
-      })
-    },
-      // tslint:disable-next-line
-      (_err: any) => {
-      })
+  //     this.updateUserDataForm.patchValue({
+  //       countryCode: '+91',
+  //     })
+  //   },
+  //     // tslint:disable-next-line
+  //     (_err: any) => {
+  //     })
+  // }
+
+  async loadRoles() {
+    this.roleservice.getAllRoles().subscribe((_data: any) => {
+      const parseRoledata = JSON.parse(_data.result.response.value)
+      this.orgTypeList = parseRoledata.orgTypeList
+    })
   }
 
   closeOtherPanels(openPanel: MatExpansionPanel) {
@@ -356,70 +365,86 @@ export class UserCardComponent implements OnInit, OnChanges {
   }
 
   onEditUser(user: any, pnael: any) {
-    pnael.open()
-    user.enableEdit = !user.enableEdit
-    this.setUserDetails(user)
-  }
-
-  getUerData(user: any, data: any) {
-    user.enableEdit = false
-    const profileDataAll = user
-    this.userStatus = profileDataAll.isDeleted ? 'Inactive' : 'Active'
-
-    const profileData = profileDataAll.profileDetails
-    this.updateTags(profileData)
-
-    if (this.isApprovals) {
-      // this.needApprovalList = []
-      this.actionList = []
-      this.comment = ''
-      this.getApprovalList(data)
-    } else {
-      this.roleservice.getAllRoles().subscribe((_data: any) => {
-        const parseRoledata = JSON.parse(_data.result.response.value)
-        this.orgTypeList = parseRoledata.orgTypeList
-
-        // New code for roles
-        for (let i = 0; i < this.orgTypeList.length; i += 1) {
-          if (this.orgTypeList[i].name === 'MDO') {
-            _.each(this.orgTypeList[i].roles, rolesObject => {
-              // if (this.isMdoAdmin) {
-              //   if (rolesObject === 'PUBLIC') {
-              //     this.uniqueRoles.push({
-              //       roleName: rolesObject, description: rolesObject,
-              //     })
-              //   }
-              //   if (rolesObject === 'MDO_DASHBOARD_USER') {
-              //     this.uniqueRoles.push({
-              //       roleName: rolesObject, description: rolesObject,
-              //     })
-              //   }
-              // } else {
-              // if (this.isMdoLeader) {
-              if (rolesObject !== 'MDO_LEADER') {
-                this.uniqueRoles.push({
-                  roleName: rolesObject, description: rolesObject,
-                })
-                // }
-              }
-              // }
-            })
-          }
-        }
-        this.uniqueRoles.forEach((role: any) => {
-          if (!this.rolesList.some((item: any) => item.roleName === role.roleName)) {
-            this.rolesList.push(role)
+    let userval = user
+    this.usersSvc.getUserById(user.userId).subscribe((res: any) => {
+      if (res) {
+        userval = res
+        this.usersData.forEach((u: any) => {
+          if (u.userId === user.userId) {
+            u.enableEdit = true
+            userval.enableEdit = true
+          } else {
+            u.enableEdit = false
           }
         })
-        const usrRoles = profileDataAll.organisations[0] && profileDataAll.organisations[0].roles
-          ? profileDataAll.organisations[0].roles : []
-        if (usrRoles.length > 0) {
-          usrRoles.forEach((role: any) => {
-            this.orguserRoles.push(role)
-            this.modifyUserRoles(role)
+
+        pnael.open()
+        this.setUserDetails(userval)
+      }
+    })
+  }
+
+  getUerData(user: any, data: any, panel: any) {
+    if (panel.expanded) {
+      user.enableEdit = false
+      let profileDataAll = user
+      this.userStatus = profileDataAll.isDeleted ? 'Inactive' : 'Active'
+
+      const profileData = profileDataAll.profileDetails
+      this.updateTags(profileData)
+
+      if (this.isApprovals) {
+        this.approveUserDataForm.reset()
+        user.needApprovalList = []
+        this.actionList = []
+        this.comment = ''
+        this.getApprovalList(data)
+      } else {
+        this.usersSvc.getUserById(user.userId).subscribe((res: any) => {
+          if (res) {
+            profileDataAll = res
+            profileDataAll.enableEdit = false
+            // user = profileDataAll
+            this.userRoles.clear()
+            this.mapRoles(profileDataAll)
+          }
+        })
+      }
+    }
+  }
+
+  mapRoles(user: any) {
+    if (this.orgTypeList && this.orgTypeList.length > 0) {
+      // New code for roles
+      for (let i = 0; i < this.orgTypeList.length; i += 1) {
+        if (this.orgTypeList[i].name === 'MDO') {
+          _.each(this.orgTypeList[i].roles, rolesObject => {
+            if (rolesObject !== 'MDO_LEADER') {
+              this.uniqueRoles.push({
+                roleName: rolesObject, description: rolesObject,
+              })
+            }
           })
         }
+      }
+      this.uniqueRoles.forEach((role: any) => {
+        if (!this.rolesList.some((item: any) => item.roleName === role.roleName)) {
+          this.rolesList.push(role)
+        }
       })
+      const usrRoles = user.organisations[0] && user.organisations[0].roles
+        ? user.organisations[0].roles : []
+      if (usrRoles.length > 0) {
+        this.updateUserDataForm.controls['roles'].setValue(usrRoles)
+        usrRoles.forEach((role: any) => {
+          this.orguserRoles.push(role)
+          this.userRoles.add(role)
+          // this.modifyUserRoles(role)
+        })
+      }
+    } else {
+      this.loadRoles()
+      this.mapRoles(user)
     }
   }
 
@@ -481,11 +506,16 @@ export class UserCardComponent implements OnInit, OnChanges {
           this.updateUserDataForm.controls['employeeID'].setValue(user.profileDetails.employmentDetails.employeeCode)
         }
       }
+      this.mapRoles(user)
     }
   }
 
   private getDateFromText(dateString: string): any {
     if (dateString) {
+      const sv: string[] = dateString.split('T')
+      if (sv && sv.length > 1) {
+        return sv[0]
+      }
       const splitValues: string[] = dateString.split('-')
       const [dd, mm, yyyy] = splitValues
       const dateToBeConverted = `${yyyy}-${mm}-${dd}`
@@ -575,9 +605,6 @@ export class UserCardComponent implements OnInit, OnChanges {
 
   onSubmit(form: any, user: any, panel: any) {
     if (form.valid) {
-      // const tags = user.profileDetails && user.profileDetails.additionalProperties && user.profileDetails.additionalProperties.tags ?
-      //   user.profileDetails.additionalProperties.tags : []
-      // if (tags !== this.selectedtags) {
       this.reqbody = {
         request: {
           userId: user.userId,
@@ -605,20 +632,6 @@ export class UserCardComponent implements OnInit, OnChanges {
           },
         },
       }
-      // } else {
-      //   this.reqbody = {
-      //     request: {
-      //       userId: user.userId,
-      //       profileDetails: {
-      //         professionalDetails: [
-      //           {
-      //             designation: this.updateUserDataForm.controls['designation'].value,
-      //           },
-      //         ],
-      //       },
-      //     },
-      //   }
-      // }
       this.usersSvc.updateUserDetails(this.reqbody).subscribe(dres => {
         if (dres) {
           if (this.isMdoLeader) {
@@ -630,7 +643,6 @@ export class UserCardComponent implements OnInit, OnChanges {
                   roles: Array.from(this.userRoles),
                 },
               }
-
               this.usersSvc.addUserToDepartment(dreq).subscribe(res => {
                 if (res) {
                   this.updateUserDataForm.reset({ roles: '' })
@@ -639,15 +651,6 @@ export class UserCardComponent implements OnInit, OnChanges {
                   panel.close()
                   this.updateList.emit()
                   this.searchByEnterKey.emit('')
-                  // this.router.navigate(['/app/home/users/allusers'])
-
-                  // this.usersSvc.getUserById(user.userId).subscribe((_res: any) => {
-                  //   if (_res) {
-                  //     // tslint:disable-next-line
-                  //     user = _res
-                  //     user['enableEdit'] = false
-                  //   }
-                  // })
                 }
               })
             } else {
@@ -659,13 +662,6 @@ export class UserCardComponent implements OnInit, OnChanges {
             panel.close()
             this.updateList.emit()
             this.openSnackbar('User updated Successfully')
-            // this.usersSvc.getUserById(user.userId).subscribe((res: any) => {
-            //   if (res) {
-            //     // tslint:disable-next-line
-            //     user = res
-            //     user.enableEdit = false
-            //   }
-            // })
           }
         }
       },
@@ -697,7 +693,13 @@ export class UserCardComponent implements OnInit, OnChanges {
       updateFieldValues: JSON.parse(field.wf.updateFieldValues),
     }
     if (action === 'APPROVE') {
-      this.actionList.push(req)
+      // const index = this.actionList.indexOf(req.wfId)
+      const index = this.actionList.findIndex((x: any) => x.wfId === req.wfId)
+      if (index > -1) {
+        this.actionList[index] = req
+      } else {
+        this.actionList.push(req)
+      }
       // this.onApproveOrRejectClick(req)
     } else {
       this.comment = ''
@@ -709,7 +711,13 @@ export class UserCardComponent implements OnInit, OnChanges {
           // this.onApproveOrRejectClick(req)
           req.comment = this.comment
           field.comment = this.comment
-          this.actionList.push(req)
+          // const index = this.actionList.indexOf(req.wfId)
+          const index = this.actionList.findIndex((x: any) => x.wfId === req.wfId)
+          if (index > -1) {
+            this.actionList[index] = req
+          } else {
+            this.actionList.push(req)
+          }
         } else {
           dialogRef.close()
         }
@@ -745,17 +753,17 @@ export class UserCardComponent implements OnInit, OnChanges {
           req.comment = ''
         }
         this.onApproveOrRejectClick(req)
-
         if (index === datalength - 1) {
           panel.close()
           this.comment = ''
           setTimeout(() => {
             this.openSnackbar('Request approved successfully')
+            this.updateList.emit()
             // tslint:disable-next-line
           }, 100)
         }
         // tslint:disable-next-line
-        this.approvalData = this.approvalData.filter((wf: any) => { wf.userWorkflow.userInfo.wid !== req.userId })
+        // this.approvalData = this.approvalData.filter((wf: any) => { wf.userWorkflow.userInfo.wid !== req.userId })
         if (this.approvalData.length === 0) {
           this.disableButton.emit()
         }
@@ -817,6 +825,39 @@ export class UserCardComponent implements OnInit, OnChanges {
       if (v) {
         this.markStatus('NOT-VERIFIED', user)
       }
+    })
+  }
+
+  confirmUpdate(template: any, updateUserDataForm: any, user: any, panel: any) {
+    const dialog = this.dialog.open(template, {
+      width: '500px',
+    })
+    dialog.afterClosed().subscribe((v: any) => {
+      if (v) {
+        this.onSubmit(updateUserDataForm, user, panel)
+      } else {
+        this.cancelSubmit(user)
+      }
+    })
+  }
+
+  confirmApproval(template: any, panel: any) {
+    const dialog = this.dialog.open(template, {
+      width: '500px',
+    })
+    dialog.afterClosed().subscribe((v: any) => {
+      if (v) {
+        this.onApprovalSubmit(panel)
+      } else {
+        panel.close()
+      }
+    })
+  }
+
+  onApprovalCancel(panel: any, appData: any) {
+    panel.close()
+    appData.needApprovalList.forEach((f: any) => {
+      f.action = ''
     })
   }
 }

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core'
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core'
 import { FormBuilder, FormControl, Validators } from '@angular/forms'
 import { MomentDateAdapter } from '@angular/material-moment-adapter'
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core'
@@ -26,9 +26,9 @@ export const MY_FORMATS = {
   },
 }
 
-const EMAIL_PATTERN = `^[\\w\-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$`
-const MOBILE_PATTERN = '^((\\+91-?)|0)?[0-9]{10}$'
-const PIN_CODE_PATTERN = '(^[0-9]{6}$)'
+const EMAIL_PATTERN = /^[a-zA-Z0-9](\.?[a-zA-Z0-9_]+)*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+const MOBILE_PATTERN = /^[0]?[6789]\d{9}$/
+const PIN_CODE_PATTERN = /^[1-9][0-9]{5}$/
 
 @Component({
   selector: 'ws-single-user-creation',
@@ -39,9 +39,10 @@ const PIN_CODE_PATTERN = '(^[0-9]{6}$)'
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
   ],
 })
-export class SingleUserCreationComponent implements OnInit, OnDestroy {
+export class SingleUserCreationComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChildren('rolesCheckbox') checkboxes!: QueryList<ElementRef>
+  defaultRole = ['PUBLIC']
   private destroySubject$ = new Subject()
   separatorKeysCodes: number[] = [ENTER, COMMA]
   masterData: any = {}
@@ -112,6 +113,18 @@ export class SingleUserCreationComponent implements OnInit, OnDestroy {
     this.getMasterLanguages()
     this.getGroups()
     this.getOrgRolesList()
+  }
+
+  ngAfterViewInit(): void {
+    this.setDefaultValue()
+
+  }
+
+  setDefaultValue(): void {
+    if (this.userCreationForm.get('roles')) {
+      // tslint:disable-next-line
+      this.userCreationForm.get('roles')!.patchValue(this.defaultRole)
+    }
     this.userCreationForm.patchValue({
       channel: (this.fullProfile && this.fullProfile.unMappedUser.channel) || '',
     })
@@ -181,18 +194,23 @@ export class SingleUserCreationComponent implements OnInit, OnDestroy {
         this.rolesArr.splice(this.rolesArr.indexOf(role), 1)
       }
     }
-
-    this.userCreationForm.patchValue({
-      roles: this.rolesArr,
-    })
+    // tslint:disable-next-line
+    this.userCreationForm.get('roles')!.patchValue([...this.defaultRole, ...this.rolesArr])
   }
 
   handleAddTags(event: MatChipInputEvent): void {
     const value = event.value as string
-    if ((value && value.trim()) && this.userCreationForm.get('roles')) {
+    // tslint:disable-next-line
+    if (!this.userCreationForm.get('tags')!.value) {
+      // tslint:disable-next-line
+      this.userCreationForm.get('tags')!.patchValue([])
+    }
+
+    if ((value && value.trim()) && this.userCreationForm.get('tags')) {
       // tslint:disable-next-line
       this.userCreationForm.get('tags')!.value.push(value)
     }
+
     if (event.input) {
       event.input.value = ''
     }
@@ -212,8 +230,13 @@ export class SingleUserCreationComponent implements OnInit, OnDestroy {
   handleFormClear(): void {
     this.userCreationForm.reset()
     this.checkboxes.forEach((elem: any) => {
-      elem.checked = false
+      if (elem.value !== 'PUBLIC') {
+        elem.checked = false
+      }
     })
+    // this.initForm()
+    this.rolesArr = []
+    this.setDefaultValue()
   }
 
   handleUserCreation(): void {

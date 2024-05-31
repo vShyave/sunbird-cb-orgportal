@@ -53,7 +53,7 @@
           <ws-widget-user-card [currentFilter]="currentFilter" [usersData]="data" [isApprovals]="true"
             [totalRecords]="approvalTotalCount" [tabChangeIndex]="pageIndex"
             (searchByEnterKey)="onEnterkySearch($event)" (disableButton)="showButton()"
-            (paginationData)="onPaginateChange($event)"></ws-widget-user-card>
+            (paginationData)="onPaginateChange($event)" (updateList)="fetchApprovals()"></ws-widget-user-card>
         </ng-container>
         <ng-container *ngIf="!data || data.length === 0">
           <p class="margin-top-xl margin-bottom-xl">No approvals</p>
