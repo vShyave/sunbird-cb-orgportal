@@ -53,86 +53,91 @@
           (paginationData)="onPaginateChange($event)"></ws-widget-user-card>
       </div>
     </mat-tab>
+    <mat-tab label="Not my Users ({{notmyuserUsersDataCount}})">
+      <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="notmyuserUsersData"
+        [totalRecords]="notmyuserUsersDataCount" [tabChangeIndex]="pageIndex"
+        (searchByEnterKey)="handleOnEnterKeySearch($event)" (paginationData)="onPaginateChange($event)"
+        (updateList)="getNMUsers('')"></ws-widget-user-card>
+    </mat-tab>
   </mat-tab-group>
-</div>
 
-<!-- <div class="flex flex-4 flex-column main-flex-box">
-  <mat-card class="no-border">
-    <mat-card-title class="flex-4 mobile-margin text-capitalize margin-bottom-l">
-      <span class="h-600-s-20-m color-87">Users</span>
-    </mat-card-title>
-    <mat-card class="mb-8">
-      <mat-card-content class="flex gap-10">
-        <div class="section-1">
-          <div class="flex-4 mobile-margin text-capitalize mat-h2">Note:</div>
-          <ng-container *ngFor="let note of reportsNoteList">
-            <div class="flex gap-4 mb-4">
-              <div>
-                <mat-icon class="infoIcon">error_outline</mat-icon>
+  <!-- <div class="flex flex-4 flex-column main-flex-box">
+    <mat-card class="no-border">
+      <mat-card-title class="flex-4 mobile-margin text-capitalize margin-bottom-l">
+        <span class="h-600-s-20-m color-87">Users</span>
+      </mat-card-title>
+      <mat-card class="mb-8">
+        <mat-card-content class="flex gap-10">
+          <div class="section-1">
+            <div class="flex-4 mobile-margin text-capitalize mat-h2">Note:</div>
+            <ng-container *ngFor="let note of reportsNoteList">
+              <div class="flex gap-4 mb-4">
+                <div>
+                  <mat-icon class="infoIcon">error_outline</mat-icon>
+                </div>
+                <div [innerHTML]="sanitizeHtml(note)"></div>
               </div>
-              <div [innerHTML]="sanitizeHtml(note)"></div>
+            </ng-container>
+          </div>
+          <div class="reportsDemo flex justify-end section-2">
+            <div class="reportsDemoVideo flex flex-column flex-middle justify-center margin-top-m"
+              (click)="openVideoPopup()">
+              <mat-icon class="video_icon mb-2">play_circle</mat-icon>
+              <div>
+                Watch how it works
+              </div>
             </div>
-          </ng-container>
-        </div>
-        <div class="reportsDemo flex justify-end section-2">
-          <div class="reportsDemoVideo flex flex-column flex-middle justify-center margin-top-m"
-            (click)="openVideoPopup()">
-            <mat-icon class="video_icon mb-2">play_circle</mat-icon>
-            <div>
-              Watch how it works
-            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card-content>
+        <div class="flex flex-1 flex-column margin-fix">
+          <div class="flex flex-1 filter max-height-60">
+            <a routerLink="/app/home/users/allusers" routerLinkActive="router-link-active" class="filter-option"
+              [ngClass]="{'ws-mat-accent-border-active' : currentFilter === 'allusers','ws-mat-accent-border font-medium':currentFilter !== 'allusers'}"
+              mat-button (click)="filter('allusers'); tabTelemetry('allusers', 0)" role="button">All users
+              ({{activeUsersDataCount}})</a>
+
+            <a routerLink="/app/home/users/verified" routerLinkActive="router-link-active" class="filter-option"
+              [ngClass]="{'ws-mat-accent-border-active' : currentFilter === 'verified','ws-mat-accent-border font-medium':currentFilter !== 'verified'}"
+              mat-button (click)="filter('verified'); tabTelemetry('verified', 0)" role="button">Verified
+              ({{verifiedUsersDataCount}})</a>
+
+            <a routerLink="/app/home/users/nonverified" routerLinkActive="router-link-active" class="filter-option"
+              [ngClass]="{'ws-mat-accent-border-active' : currentFilter === 'nonverified','ws-mat-accent-border font-medium':currentFilter !== 'nonverified'}"
+              mat-button (click)="filter('nonverified'); tabTelemetry('nonverified', 0)" role="button">Non-verified
+              ({{nonverifiedUsersDataCount}})</a>
+
+            <a routerLink="/app/home/users/notmyuser" routerLinkActive="router-link-active" class="filter-option"
+              [ngClass]="{'ws-mat-accent-border-active' : currentFilter === 'notmyuser','ws-mat-accent-border font-medium':currentFilter !== 'notmyuser'}"
+              mat-button (click)="filter('notmyuser'); tabTelemetry('notmyuser', 0)" role="button">Not my user
+              ({{notmyuserUsersDataCount}})</a>
           </div>
         </div>
       </mat-card-content>
     </mat-card>
-    <mat-card-content>
-      <div class="flex flex-1 flex-column margin-fix">
-        <div class="flex flex-1 filter max-height-60">
-          <a routerLink="/app/home/users/allusers" routerLinkActive="router-link-active" class="filter-option"
-            [ngClass]="{'ws-mat-accent-border-active' : currentFilter === 'allusers','ws-mat-accent-border font-medium':currentFilter !== 'allusers'}"
-            mat-button (click)="filter('allusers'); tabTelemetry('allusers', 0)" role="button">All users
-            ({{activeUsersDataCount}})</a>
+  </div> -->
 
-          <a routerLink="/app/home/users/verified" routerLinkActive="router-link-active" class="filter-option"
-            [ngClass]="{'ws-mat-accent-border-active' : currentFilter === 'verified','ws-mat-accent-border font-medium':currentFilter !== 'verified'}"
-            mat-button (click)="filter('verified'); tabTelemetry('verified', 0)" role="button">Verified
-            ({{verifiedUsersDataCount}})</a>
-
-          <a routerLink="/app/home/users/nonverified" routerLinkActive="router-link-active" class="filter-option"
-            [ngClass]="{'ws-mat-accent-border-active' : currentFilter === 'nonverified','ws-mat-accent-border font-medium':currentFilter !== 'nonverified'}"
-            mat-button (click)="filter('nonverified'); tabTelemetry('nonverified', 0)" role="button">Non-verified
-            ({{nonverifiedUsersDataCount}})</a>
-
-          <!-- <a routerLink="/app/home/users/notmyuser" routerLinkActive="router-link-active" class="filter-option"
-            [ngClass]="{'ws-mat-accent-border-active' : currentFilter === 'notmyuser','ws-mat-accent-border font-medium':currentFilter !== 'notmyuser'}"
-            mat-button (click)="filter('notmyuser'); tabTelemetry('notmyuser', 0)" role="button">Not my user
-            ({{notmyuserUsersDataCount}})</a> -->
-        </div>
-      </div>
-      <ng-container *ngIf="currentFilter === 'allusers'">
-        <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="activeUsersData"
-          [totalRecords]="activeUsersDataCount" [tabChangeIndex]="pageIndex" [isApprovals]="false"
-          (searchByEnterKey)="onEnterkySearch($event)" (paginationData)="onPaginateChange($event)"
-          (updateList)="getAllUsers('')"></ws-widget-user-card>
-      </ng-container>
-      <ng-container *ngIf="currentFilter === 'verified'">
-        <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="verifiedUsersData"
-          [totalRecords]="verifiedUsersDataCount" [tabChangeIndex]="pageIndex"
-          (searchByEnterKey)="onEnterkySearch($event)" (paginationData)="onPaginateChange($event)"
-          (updateList)="getVUsers('')"></ws-widget-user-card>
-      </ng-container>
-      <ng-container *ngIf="currentFilter === 'nonverified'">
-        <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="nonverifiedUsersData"
-          [totalRecords]="nonverifiedUsersDataCount" [tabChangeIndex]="pageIndex"
-          (searchByEnterKey)="onEnterkySearch($event)" (paginationData)="onPaginateChange($event)"
-          (updateList)="getNVUsers('')"></ws-widget-user-card>
-      </ng-container>
-      <ng-container *ngIf="currentFilter === 'notmyuser'">
-        <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="notmyuserUsersData"
-          [totalRecords]="notmyuserUsersDataCount" [tabChangeIndex]="pageIndex"
-          (searchByEnterKey)="onEnterkySearch($event)" (paginationData)="onPaginateChange($event)"
-          (updateList)="getNMUsers('')"></ws-widget-user-card>
-      </ng-container>
-    </mat-card-content>
-  </mat-card>
-</div> -->
+  <!-- <ng-container *ngIf="currentFilter === 'allusers'">
+    <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="activeUsersData"
+      [totalRecords]="activeUsersDataCount" [tabChangeIndex]="pageIndex" [isApprovals]="false"
+      (searchByEnterKey)="onEnterkySearch($event)" (paginationData)="onPaginateChange($event)"
+      (updateList)="getAllUsers('')"></ws-widget-user-card>
+  </ng-container>
+  <ng-container *ngIf="currentFilter === 'verified'">
+    <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="verifiedUsersData"
+      [totalRecords]="verifiedUsersDataCount" [tabChangeIndex]="pageIndex" (searchByEnterKey)="onEnterkySearch($event)"
+      (paginationData)="onPaginateChange($event)" (updateList)="getVUsers('')"></ws-widget-user-card>
+  </ng-container>
+  <ng-container *ngIf="currentFilter === 'nonverified'">
+    <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="nonverifiedUsersData"
+      [totalRecords]="nonverifiedUsersDataCount" [tabChangeIndex]="pageIndex"
+      (searchByEnterKey)="onEnterkySearch($event)" (paginationData)="onPaginateChange($event)"
+      (updateList)="getNVUsers('')"></ws-widget-user-card>
+  </ng-container>
+  <ng-container *ngIf="currentFilter === 'notmyuser'">
+    <ws-widget-user-card [userId]="currentUser" [currentFilter]="currentFilter" [usersData]="notmyuserUsersData"
+      [totalRecords]="notmyuserUsersDataCount" [tabChangeIndex]="pageIndex" (searchByEnterKey)="onEnterkySearch($event)"
+      (paginationData)="onPaginateChange($event)" (updateList)="getNMUsers('')"></ws-widget-user-card>
+  </ng-container> -->
+</div>
