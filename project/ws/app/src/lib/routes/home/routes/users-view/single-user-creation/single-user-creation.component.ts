@@ -26,9 +26,9 @@ export const MY_FORMATS = {
   },
 }
 
-const EMAIL_PATTERN = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
-const MOBILE_PATTERN = /^[0]?[6789]\d{9}$/
-const PIN_CODE_PATTERN = /^[1-9][0-9]{5}$/
+const EMAIL_PATTERN = `^[\\w\-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$`
+const MOBILE_PATTERN = '^((\\+91-?)|0)?[0-9]{10}$'
+const PIN_CODE_PATTERN = '(^[0-9]{6}$)'
 
 @Component({
   selector: 'ws-single-user-creation',
@@ -47,13 +47,14 @@ export class SingleUserCreationComponent implements OnInit, OnDestroy {
   masterData: any = {}
   rolesArr: string[] = []
   fullProfile: any
+  namePatern = `^[a-zA-Z\\s\\']{1,50}$`
   userCreationForm = this.formBuilder.group({
     email: new FormControl('', [Validators.required, Validators.pattern(EMAIL_PATTERN)]),
-    firstName: new FormControl('', [Validators.required]),
+    firstName: new FormControl('', [Validators.required, Validators.pattern(this.namePatern)]),
     phone: new FormControl('', [Validators.required, Validators.pattern(MOBILE_PATTERN), Validators.minLength(10)]),
     channel: new FormControl(''),
-    designation: new FormControl(''),
-    group: new FormControl(''),
+    designation: new FormControl('', [Validators.required]),
+    group: new FormControl('', [Validators.required]),
     dob: new FormControl(''),
     domicileMedium: new FormControl(''),
     gender: new FormControl(''),

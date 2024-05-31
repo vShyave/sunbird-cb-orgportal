@@ -35,10 +35,10 @@
             mat-button (click)="filter('profileverification'); tabTelemetry('toapprove', 0)" role="button">Profile
             Verifications ({{approvalTotalCount}})</a>
 
-          <a routerLink="/app/home/approvals/transfers" class="filter-option"
+          <!-- <a routerLink="/app/home/approvals/transfers" class="filter-option"
             [ngClass]="{'ws-mat-accent-border-active' : currentFilter === 'transfers', 'ws-mat-accent-border font-medium':currentFilter !== 'transfers'}"
             mat-button (click)="filter('transfers'); tabTelemetry('transfers', 1)" role="button">Transfers
-            ({{approvalTotalCount}})</a>
+            ({{approvalTotalCount}})</a> -->
         </div>
       </div>
       <ng-container *ngIf="currentFilter === 'profileverification'">

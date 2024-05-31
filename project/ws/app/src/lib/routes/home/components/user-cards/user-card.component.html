@@ -1,20 +1,19 @@
 <div class="searchfilter" *ngIf="!isApprovals">
   <ws-app-searchuser (handleApiData)="onSearch($event)" (handleapproveAll)="onApproveALL()"
-    [showApproveALL]="showApproveALL"></ws-app-searchuser>
+    [showApproveALL]="showApproveALL" [currentFilter]="currentFilter"></ws-app-searchuser>
 </div>
-
 <div *ngIf="!isApprovals">
   <mat-accordion [multi]="true">
-    <mat-expansion-panel class="user-card" *ngFor="let user of usersData" #panel (opened)="closeOtherPanels(panel)">
+    <mat-expansion-panel class="user-card" *ngFor="let user of usersData | orderBy: 'firstName':'asc'" #panel
+      (opened)="closeOtherPanels(panel)">
       <mat-expansion-panel-header (click)="getUerData(user)">
-        <div class="float-left width88" (click)="$event.stopPropagation();">
+        <div class="flex flex-row items-center float-left width88" (click)="$event.stopPropagation();">
           <div class="initialcircle display-inline-block margin-right-m">
-            <!-- <span>AB</span> -->
             <ws-widget-avatar-photo [name]="getUseravatarName(user)" [photoUrl]="user?.photo" size="l">
             </ws-widget-avatar-photo>
           </div>
           <div class="username display-inline-block">
-            <div class="mat-subheading-2 margin-remove">
+            <div class="mat-subheading-2 margin-remove break-words">
               <span *ngIf="user?.profileDetails && user?.profileDetails?.personalDetails">
                 {{user?.profileDetails?.personalDetails?.firstname}}
               </span>
@@ -27,21 +26,27 @@
               <span class="status-label margin-left-s nonverified"
                 *ngIf="user?.profileDetails?.profileStatus === 'NOT-VERIFIED'">Non-verified
                 <mat-icon>check_circle</mat-icon></span>
+              <span class="status-label margin-left-s notmyuser"
+                *ngIf="user?.profileDetails?.profileStatus === 'NOT-MY-USER'">Not my user
+                <mat-icon>error</mat-icon></span>
             </div>
             <div class="mat-body-2 ws-mat-black40-text">{{user?.profileDetails &&
               user?.profileDetails?.professionalDetails
               &&
-              user?.profileDetails?.professionalDetails?.designation ?
-              user?.profileDetails?.professionalDetails?.designation : '-'}}</div>
-            <div class="mat-caption ws-mat-black40-text" *ngIf="user?.profileDetails?.profileStatus === 'VERIFIED'">
-              Verified on: {{user?.profileDetails?.profileStatusVerifiedOn | date: 'dd/MM/yyyy'}}</div>
+              user?.profileDetails?.professionalDetails[0]?.designation ?
+              user?.profileDetails?.professionalDetails[0]?.designation : '-'}}</div>
+            <div class="mat-caption ws-mat-black40-text" *ngIf="user?.profileDetails?.profileStatusUpdatedOn">
+              Marked on: {{user?.profileDetails?.profileStatusUpdatedOn}}</div>
+            <div class="mat-caption ws-mat-black40-text" *ngIf="!user?.profileDetails?.profileStatusUpdatedOn">-</div>
           </div>
         </div>
-        <div class="float-right">
-          <div class="button margin-top-m mat-body" (click)="onEditUser(user);$event.stopPropagation();"
-            *ngIf="isMdoAdmin || isMdoLeader">
+        <div class="float-right" *ngIf="isMdoAdmin || isMdoLeader">
+          <div class="button margin-top-m mat-body" (click)="onEditUser(user, panel);$event.stopPropagation();"
+            *ngIf="currentFilter !== 'notmyuser' && !user?.enableEdit">
             <mat-icon>edit</mat-icon> Edit
           </div>
+          <div class="button margin-top-m mat-body" (click)="confirmReassign(confirm, user);$event.stopPropagation();"
+            *ngIf="currentFilter === 'notmyuser'">Reassign</div>
         </div>
       </mat-expansion-panel-header>
 
@@ -50,7 +55,12 @@
           <div class="inner-body">
             Primary Details <mat-icon class="ws-mat-black40-text custominfo">info_outline</mat-icon>
             <p class="float-right mat-body-2" *ngIf="user?.profileDetails?.profileStatus === 'VERIFIED'">
-              <mat-slide-toggle>Mark this user as non-verified</mat-slide-toggle>
+              <mat-slide-toggle (click)="markStatus('NOT-VERIFIED', user)">Mark this user as
+                non-verified</mat-slide-toggle>
+            </p>
+            <p class="float-right mat-body-2" *ngIf="user?.profileDetails?.profileStatus === 'NOT-VERIFIED'">
+              <mat-slide-toggle (click)="markStatus('NOT-MY-USER', user)" [checked]="true">This is my
+                user</mat-slide-toggle>
             </p>
             <div class="flex flex-row margin-top-m">
               <div class="md:w-1/3">
@@ -71,7 +81,7 @@
                   check_circle</mat-icon>
                 <mat-icon class="nonverified-icon margin-left-xs"
                   *ngIf="user?.profileDetails?.profileStatus === 'NOT-VERIFIED'">
-                  check_circle</mat-icon>
+                  cancel</mat-icon>
               </div>
               <div class="md:w-1/3">
                 <label class="margin-remove-bottom form-label required">Designation</label>
@@ -94,7 +104,7 @@
                   check_circle</mat-icon>
                 <mat-icon class="nonverified-icon margin-left-xs"
                   *ngIf="user?.profileDetails?.profileStatus === 'NOT-VERIFIED'">
-                  check_circle</mat-icon>
+                  cancel</mat-icon>
               </div>
             </div>
           </div>
@@ -189,7 +199,7 @@
             </div>
             <div class="flex flex-row margin-top-m">
               <div class="md:w-1/3">
-                <label class="margin-remove-bottom form-label required">Date of Birth</label>
+                <label class="margin-remove-bottom form-label">Date of Birth</label>
                 <mat-form-field appearance="outline" class="customdob">
                   <input id="birthDate" matInput #dob formControlName="dob" [matDatepicker]="picker" i18n-placeholder
                     (focus)="picker.open()" placeholder="Choose date of birth" [min]="1/1/1900" [max]="today">
@@ -203,7 +213,7 @@
               </div>
 
               <div class="md:w-1/3">
-                <label class="margin-remove-bottom form-label required">Mother Tongue</label>
+                <label class="margin-remove-bottom form-label">Mother Tongue</label>
                 <mat-form-field appearance="outline">
                   <input id="language" matInput type="text" placeholder="Type here" i18n-placeholder="Mother Tongue"
                     formControlName="domicileMedium" [matAutocomplete]="motherTongueAuto" i18n-aria-label
@@ -226,7 +236,7 @@
               </div>
 
               <div class="md:w-1/3">
-                <label class="margin-remove-bottom form-label required">Gender</label>
+                <label class="margin-remove-bottom form-label">Gender</label>
                 <mat-form-field appearance="outline">
                   <mat-select #gender formControlName="gender" i18n-placeholder placeholder="Select gender">
                     <mat-option [value]="gender" *ngFor="let gender of genderList">
@@ -242,7 +252,7 @@
 
             <div class="flex flex-row margin-top-m">
               <div class="md:w-1/3">
-                <label class="margin-remove-bottom form-label required">Office Pin Code</label>
+                <label class="margin-remove-bottom form-label">Office Pin Code</label>
                 <mat-form-field appearance="outline">
                   <input id="pinCode" #pincode type="text" matInput placeholder="Type here" formControlName="pincode"
                     i18n-aria-label aria-label="Pin Code input field" autocomplete="off"
@@ -256,12 +266,12 @@
               <div class="md:w-1/3">
                 <label class="margin-remove-bottom form-label">eHRMS ID</label>
                 <mat-form-field appearance="outline">
-                  <input type="text" matInput #ehrmsID formControlName="ehrmsID" placeholder="Type here">
+                  <input type="text" matInput #ehrmsID formControlName="ehrmsID">
                 </mat-form-field>
               </div>
 
               <div class="md:w-1/3">
-                <label class="margin-remove-bottom form-label required">Category</label>
+                <label class="margin-remove-bottom form-label">Category</label>
                 <mat-form-field appearance="outline">
                   <mat-select #category formControlName="category" i18n-placeholder placeholder="Select category">
                     <mat-option [value]="ctg" *ngFor="let ctg of categoryList">
@@ -313,20 +323,22 @@
             </div>
 
             <div class="flex flex-row margin-top-m">
-              <div class="md:w-1/2" *ngIf="!isMdoAdmin">
+              <div class="md:w-1/1" *ngIf="isMdoLeader || isBoth">
                 <label for="roles" class="margin-remove-bottom form-label required" i18n-aria-label
                   aria-label="Roles label" i18n="Role label|Label which explains the user to select the roles">
                   Role
                 </label>
-                <mat-selection-list id="roles" formControlName="roles" #roles class="roles-list">
-                  <mat-list-option *ngFor="let role of rolesList" (click)="modifyUserRoles(role.roleName)"
-                    [selected]="userRoles.has(role.roleName)" [value]="role?.roleName">
-                    {{role.roleName}}
-                  </mat-list-option>
-                </mat-selection-list>
+                <div>
+                  <mat-selection-list id="roles" formControlName="roles" #roles class="roles-list">
+                    <mat-list-option *ngFor="let role of rolesList" (click)="modifyUserRoles(role.roleName)"
+                      [selected]="userRoles.has(role.roleName)" [value]="role?.roleName">
+                      {{role.roleName}}
+                    </mat-list-option>
+                  </mat-selection-list>
+                </div>
               </div>
 
-              <div class="md:w-1/2" *ngIf="isMdoAdmin">
+              <div class="md:w-1/2" *ngIf="!isMdoLeader">
                 <label class="view-text-label">Roles</label>
                 <div *ngIf="user?.organisations && user?.organisations[0].roles.length > 0">
                   <ul class="roleslist">
@@ -345,7 +357,7 @@
                   Update
                 </span>
               </button>
-              <button mat-raised-button type="submit" (click)="cancelSubmit()"
+              <button mat-raised-button type="submit" (click)="cancelSubmit(user)"
                 class="btn-success btn-responsive cancelbtn">
                 <span i18n>
                   Cancel
@@ -375,20 +387,20 @@
                   check_circle</mat-icon>
                 <mat-icon class="nonverified-icon margin-left-xs"
                   *ngIf="user?.profileDetails?.profileStatus === 'NOT-VERIFIED'">
-                  check_circle</mat-icon>
+                  cancel</mat-icon>
               </p>
             </div>
             <div class="md:w-1/3">
               <label class="view-text-label">Designation</label>
               <p>{{user.profileDetails && user.profileDetails.professionalDetails &&
-                user.profileDetails.professionalDetails.designation ?
-                user.profileDetails.professionalDetails.designation : '-'}}
+                user.profileDetails.professionalDetails[0].designation ?
+                user.profileDetails.professionalDetails[0].designation : '-'}}
                 <mat-icon class="verified-icon margin-left-xs"
                   *ngIf="user?.profileDetails?.profileStatus === 'VERIFIED'">
                   check_circle</mat-icon>
                 <mat-icon class="nonverified-icon margin-left-xs"
                   *ngIf="user?.profileDetails?.profileStatus === 'NOT-VERIFIED'">
-                  check_circle</mat-icon>
+                  cancel</mat-icon>
               </p>
             </div>
           </div>
@@ -410,13 +422,13 @@
 
             <div class="md:w-1/4">
               <label class="view-text-label">Email</label>
-              <p>{{user.profileDetails && user.profileDetails.personalDetails ?
+              <p class="word-wrap">{{user.profileDetails && user.profileDetails.personalDetails ?
                 user.profileDetails.personalDetails.primaryEmail : '-'}}</p>
             </div>
 
             <div class="md:w-1/4">
               <label class="view-text-label">Mobile Number</label>
-              <p>{{user.profileDetails && user.profileDetails.personalDetails ?
+              <p>+91-{{user.profileDetails && user.profileDetails.personalDetails ?
                 user.profileDetails.personalDetails.mobile : '-'}}</p>
             </div>
 
@@ -449,12 +461,12 @@
                 user.profileDetails.personalDetails.category : '-'}}</p>
             </div>
 
-            <div class="md:w-1/4">
+            <!-- <div class="md:w-1/4">
               <label class="view-text-label">Pay Band</label>
               <p>{{user.profileDetails && user.profileDetails.employmentDetails &&
                 user.profileDetails.employmentDetails.payType ?
                 user.profileDetails.employmentDetails.payType : '-'}}</p>
-            </div>
+            </div> -->
           </div>
           <div class="flex flex-row margin-top-m">
             <div class="md:w-1/4">
@@ -466,7 +478,9 @@
 
             <div class="md:w-1/4">
               <label class="view-text-label">eHRMS ID</label>
-              <p>{{user.ehrmsID ? user.ehrmsID : '-'}}</p>
+              <p>{{user.profileDetails && user.profileDetails.additionalProperties &&
+                user.profileDetails.additionalProperties.externalSystemId ?
+                user.profileDetails.additionalProperties.externalSystemId : '-'}}</p>
             </div>
 
             <div class="md:w-1/2">
@@ -506,7 +520,7 @@
 <!-- for Approvals page -->
 <div *ngIf="isApprovals">
   <mat-accordion [multi]="true" *ngIf="approvalData">
-    <mat-expansion-panel class="user-card" *ngFor="let appData of approvalData" #panel
+    <mat-expansion-panel class="user-card" *ngFor="let appData of approvalData | orderBy: 'firstName':'asc'" #panel
       (opened)="closeOtherPanels(panel)">
       <mat-expansion-panel-header (click)="getUerData(appData.user, appData.userWorkflow);">
         <div class="float-left width82" (click)="$event.stopPropagation();">
@@ -525,8 +539,8 @@
             </div>
             <div class="mat-body-2 ws-mat-black40-text">{{appData.user &&
               appData.user.profileDetails.professionalDetails &&
-              appData.user.profileDetails.professionalDetails.designation ?
-              appData.user.profileDetails.professionalDetails.designation : '-'}}</div>
+              appData.user.profileDetails.professionalDetails[0].designation ?
+              appData.user.profileDetails.professionalDetails[0].designation : '-'}}</div>
             <div class="mat-caption ws-mat-black40-text">Requested on: {{appData.requestedon | date: 'dd/MM/yyyy'}}
             </div>
           </div>
@@ -548,38 +562,13 @@
                 class="ws-mat-black40-text infoicon">info_outline</mat-icon>
             </div>
             <div class="flex flex-row margin-top-m">
-              <!-- <div class="md:w-1/3">
-                <label class="view-text-label">Designation</label>
-                <p>{{appData.user.profileDetails && appData.user.profileDetails.professionalDetails &&
-                  appData.user.profileDetails.professionalDetails.designation ?
-                  appData.user.profileDetails.professionalDetails.designation : '-'}} <mat-icon
-                    class="verified-icon">check_circle</mat-icon></p>
-                <mat-radio-group aria-label="Select an option" name="approveDesignation"
-                  formControlName="approveDesignation">
-                  <mat-radio-button value="approve" class="margin-right-s">Approve</mat-radio-button>
-                  <mat-radio-button value="reject" (click)="addRejection('designation')">Reject</mat-radio-button>
-                </mat-radio-group>
-              </div>
-
-              <div class="md:w-1/3">
-                <label class="view-text-label">Group</label>
-                <p>{{appData.user.profileDetails && appData.user.profileDetails.additionalProperties &&
-                  appData.user.profileDetails.additionalProperties.group ?
-                  appData.user.profileDetails.additionalProperties.group : '-'}} <mat-icon
-                    class="verified-icon">check_circle</mat-icon>
-                </p>
-
-                <mat-radio-group aria-label="Select an option" name="approveGroup" formControlName="approveGroup">
-                  <mat-radio-button value="approve" class="margin-right-s">Approve</mat-radio-button>
-                  <mat-radio-button value="reject" (click)="addRejection('group')">Reject</mat-radio-button>
-                </mat-radio-group>
-              </div> -->
               <ng-container *ngFor="let field of appData.needApprovalList">
                 <div class="md:w-1/3 margin-bottom-s" *ngIf="field.label === 'Group'">
                   <label class="view-text-label">Group</label>
                   <div>
                     <span>
-                      <input type="text" class="appr-text-field margin-bottom-s" [value]="field.value">
+                      <input type="text" class="appr-text-field margin-bottom-s" [value]="field.value"
+                        [disabled]="true">
                       <mat-icon class="verified-icon margin-left-s"
                         *ngIf="field.action === 'APPROVE'">check_circle</mat-icon>
                       <mat-icon class="nonverified-icon margin-left-s"
@@ -601,7 +590,8 @@
                   <label class="view-text-label">Designation</label>
                   <div>
                     <span>
-                      <input type="text" class="appr-text-field margin-bottom-s" [value]="field.value">
+                      <input type="text" class="appr-text-field margin-bottom-s" [value]="field.value"
+                        [disabled]="true">
                       <mat-icon class="verified-icon margin-left-s"
                         *ngIf="field.action === 'APPROVE'">check_circle</mat-icon>
                       <mat-icon class="nonverified-icon margin-left-s"
@@ -618,6 +608,17 @@
                         (click)="updateRejection(field)">chat_bubble</mat-icon>
                     </mat-radio-group>
                   </div>
+                </div>
+              </ng-container>
+
+              <ng-container *ngFor="let field of appData.noneedApprovalList">
+                <div class="md:w-1/3 margin-bottom-s" *ngIf="field.label === 'Group'">
+                  <label class="view-text-label">Group</label>
+                  <input type="text" class="appr-text-field margin-bottom-s" [value]="field.value" [disabled]="true">
+                </div>
+                <div class="md:w-1/3 margin-bottom-s" *ngIf="field.label === 'Designation'">
+                  <label class="view-text-label">Designation</label>
+                  <input type="text" class="appr-text-field margin-bottom-s" [value]="field.value" [disabled]="true">
                 </div>
               </ng-container>
             </div>
@@ -645,7 +646,7 @@
 
               <div class="md:w-1/4">
                 <label class="view-text-label">Mobile Number</label>
-                <p>{{appData.user.profileDetails && appData.user.profileDetails.personalDetails ?
+                <p>+91-{{appData.user.profileDetails && appData.user.profileDetails.personalDetails ?
                   appData.user.profileDetails.personalDetails.mobile : '-'}}</p>
               </div>
 
@@ -696,7 +697,9 @@
 
               <div class="md:w-1/4">
                 <label class="view-text-label">eHRMS ID</label>
-                <p>{{appData.user.ehrmsID ? appData.user.ehrmsID : '-'}}</p>
+                <p>{{appData.user.profileDetails && appData.user.profileDetails.additionalProperties &&
+                  appData.user.profileDetails.additionalProperties.externalSystemId ?
+                  appData.user.profileDetails.additionalProperties.externalSystemId : '-'}}</p>
               </div>
 
               <div class="md:w-1/2">
@@ -731,7 +734,8 @@
 
           <div class="flex flex-row margin-top-l">
             <button mat-raised-button type="submit" (click)="onApprovalSubmit(panel)"
-              class="margin-right-m btn-success btn-responsive successbtn" [disabled]="!approveUserDataForm.valid">
+              class="margin-right-m btn-success btn-responsive successbtn"
+              [disabled]="appData.needApprovalList.length !== actionList.length">
               <span class="text-white" i18n>
                 Update
               </span>
@@ -764,7 +768,8 @@
     <mat-dialog-content>
       <mat-form-field class="w-full mt-5" appearance="outline">
         <textarea matInput class="reason-text-area" [(ngModel)]="comment" name="reason"
-          placeholder="Type the description in fewer than 100 characters" i18n-placeholder resizable="none"></textarea>
+          placeholder="Type the description in fewer than 100 characters" i18n-placeholder resizable="none"
+          maxlength="100"></textarea>
       </mat-form-field>
     </mat-dialog-content>
     <mat-dialog-actions class="flex flex-wrap justify-end">
@@ -785,7 +790,8 @@
       <p class="margin-top-l margin-bottom-l" *ngIf="!showeditText">{{comment}}</p>
       <mat-form-field class="w-full mt-5" appearance="outline" *ngIf="showeditText">
         <textarea matInput class="reason-text-area" [(ngModel)]="comment" name="reason"
-          placeholder="Type the description in fewer than 100 characters" i18n-placeholder resizable="none"></textarea>
+          placeholder="Type the description in fewer than 100 characters" i18n-placeholder resizable="none"
+          maxlength="100"></textarea>
       </mat-form-field>
     </mat-dialog-content>
     <mat-dialog-actions class="flex flex-wrap justify-end" *ngIf="showeditText">
@@ -794,4 +800,49 @@
       <button mat-raised-button class="btn-success btn-responsive cancelbtn" matDialogClose>Cancel</button>
     </mat-dialog-actions>
   </form>
+</ng-template>
+
+<ng-template #confirm>
+  <div class="confirm-dialog text-center padding-l">
+    <mat-icon class="infoIcon orangeicon-dialog">error_outline</mat-icon>
+    <div mat-dialog-content i18n class="margin-top-xs blue-text">
+      Are you sure you want to re-assign this user to your MDO?
+    </div>
+    <div class="mat-caption margin-top-xs">Note: The user will be shifted to non-verified tab</div>
+    <div mat-dialog-actions class="flex-center margin-top-s">
+      <button mat-raised-button type="submit" [mat-dialog-close]="false"
+        class="margin-right-m  btn-success btn-responsive cancelbtn">
+        <span i18n>
+          No
+        </span>
+      </button>
+      <button mat-raised-button type="submit" [mat-dialog-close]="true" class="btn-success btn-responsive successbtn">
+        <span class="text-white" i18n>
+          Yes
+        </span>
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #updateconfirm>
+  <div class="confirm-dialog text-center padding-l">
+    <mat-icon class="infoIcon orangeicon-dialog">error_outline</mat-icon>
+    <div mat-dialog-content i18n class="margin-top-xs blue-text">
+      Are you sure you want to update?
+    </div>
+    <div mat-dialog-actions class="flex-center margin-top-s">
+      <button mat-raised-button type="submit" [mat-dialog-close]="false"
+        class="margin-right-m  btn-success btn-responsive cancelbtn">
+        <span i18n>
+          No
+        </span>
+      </button>
+      <button mat-raised-button type="submit" [mat-dialog-close]="true" class="btn-success btn-responsive successbtn">
+        <span class="text-white" i18n>
+          Yes
+        </span>
+      </button>
+    </div>
+  </div>
 </ng-template>

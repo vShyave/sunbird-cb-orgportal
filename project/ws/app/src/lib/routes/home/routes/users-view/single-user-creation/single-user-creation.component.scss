@@ -63,3 +63,7 @@
     left: -16px;
   }
 }
+
+::ng-deep .required-select .mat-form-field-subscript-wrapper {
+  margin-top: 20px;
+}

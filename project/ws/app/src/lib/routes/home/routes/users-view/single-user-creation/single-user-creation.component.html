@@ -1,3 +1,4 @@
+<div class="mat-title">Create a New User</div>
 <div class="flex flex-col gap-6 bulk-container">
   <div class="text-xl font-semibold">User Details</div>
 
@@ -5,10 +6,14 @@
     <div class="flex flex-row gap-6">
       <div class="input-container">
         <div class="label required">Full name</div>
-        <input type="text" class="input-text" formControlName="firstName" placeholder="Type here" />
+        <input type="text" class="input-text" formControlName="firstName" placeholder="Type here" maxlength="50" />
         <mat-error class="text-xs"
-          *ngIf="userCreationForm?.get('firstName')?.touched && userCreationForm?.get('firstName')?.invalid">
-          Please enter your full name
+          *ngIf="userCreationForm?.get('firstName')?.touched && userCreationForm?.controls['firstName'].errors?.pattern">
+          Please enter a valid name
+        </mat-error>
+        <mat-error class="text-xs"
+          *ngIf="userCreationForm?.get('firstName')?.touched && userCreationForm?.controls['firstName'].errors?.required">
+          Full name is mandatory
         </mat-error>
       </div>
       <div class="input-container">
@@ -32,8 +37,8 @@
       </div>
 
       <div class="input-container">
-        <div class="label">Designation</div>
-        <mat-form-field class="profile-form-field">
+        <div class="label required">Designation</div>
+        <mat-form-field class="profile-form-field required-select" appearance="none">
           <div class="flex flex-row auto-complete-row">
             <input type="text" class="input-text" aria-label="Designation" matInput formControlName="designation"
               [matAutocomplete]="designationAuto" />
@@ -44,18 +49,26 @@
               {{ designation.name }}
             </mat-option>
           </mat-autocomplete>
+          <mat-error class="text-xs"
+            *ngIf="userCreationForm?.get('designation')?.touched && userCreationForm?.get('designation')?.invalid">
+            Please choose a designation
+          </mat-error>
         </mat-form-field>
       </div>
     </div>
 
     <div class="flex flex-row gap-6">
       <div class="input-container">
-        <div class="label">Group</div>
-        <mat-form-field class="profile-form-field">
+        <div class="label required">Group</div>
+        <mat-form-field class="profile-form-field required-select" appearance="none">
           <mat-select formControlName="group">
             <mat-option value="">Choose a group</mat-option>
             <mat-option *ngFor="let group of masterData.group" value="{{group}}">{{ group }}</mat-option>
           </mat-select>
+          <mat-error class="text-xs"
+            *ngIf="userCreationForm?.get('group')?.touched && userCreationForm?.get('group')?.invalid">
+            Please choose a group
+          </mat-error>
         </mat-form-field>
       </div>
       <div class="input-container">
@@ -113,7 +126,12 @@
       </div>
       <div class="input-container">
         <div class="label">Office pin code</div>
-        <input type="text" class="input-text" formControlName="pincode" placeholder="Type here" />
+        <input type="text" class="input-text" formControlName="pincode" placeholder="Type here" pattern="^[0-9]{1,6}$"
+          maxlength="6" />
+        <mat-error class="text-xs"
+          *ngIf="userCreationForm?.get('pincode')?.touched && userCreationForm?.get('pincode')?.invalid">
+          Please enter valid pin
+        </mat-error>
       </div>
     </div>
 

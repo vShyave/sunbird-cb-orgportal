@@ -67,7 +67,8 @@ export class BulkUploadComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.destroySubject$))
       .subscribe((res: any) => {
         this.lastUploadList = res.result.content
-      },         (error: HttpErrorResponse) => {
+        // tslint:disable-next-line
+      }, (error: HttpErrorResponse) => {
         if (!error.ok) {
           this.matSnackBar.open('Unable to get Bulk status list')
         }
@@ -83,7 +84,7 @@ export class BulkUploadComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleDownloadFile(listObj: any): void {
-    const filePath = `/apis/proxies/v8/workflow/admin/bulkuploadfile/download/${listObj.fileName}`
+    const filePath = `/apis/proxies/v8/user/v1/bulkuser/download/${listObj.fileName}`
     window.open(filePath, '_blank')
   }
 
@@ -109,7 +110,8 @@ export class BulkUploadComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!resendFlag) {
           this.verifyOTP(contactType)
         }
-      },         (error: HttpErrorResponse) => {
+        // tslint:disable-next-line
+      }, (error: HttpErrorResponse) => {
         if (!error.ok) {
           this.matSnackBar.open(_.get(error, 'error.params.errmsg') || `Unable to send OTP to your ${contactType}, please try again later!`)
         }
@@ -157,7 +159,8 @@ export class BulkUploadComponent implements OnInit, AfterViewInit, OnDestroy {
             this.fileName = ''
             this.fileSelected = ''
             this.getBulkStatusList()
-          },         (_err: HttpErrorResponse) => {
+            // tslint:disable-next-line
+          }, (_err: HttpErrorResponse) => {
             if (!_err.ok) {
               this.matSnackBar.open('Uploading CSV file failed due to some error, please try again later!')
             }

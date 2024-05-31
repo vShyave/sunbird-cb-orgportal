@@ -1,4 +1,4 @@
-<div class="flex flex-1 flex-row margin-top-m margin-bottom-m">
+<div class="flex flex-row margin-top-m margin-bottom-m justify-between">
     <div class="search flex margin-right-m" [ngClass]="{'disable': isContentLive}">
         <div class="rsearch flex w-full">
             <mat-icon
@@ -7,7 +7,7 @@
                 placeholder="Search" type="Standard" [ngClass]="{'disable': isContentLive}">
         </div>
     </div>
-    <div class="filter-section flex">
+    <!-- <div class="filter-section flex">
         <button mat-button type="button" (click)="sort()" class="apply-filter margin-right-s">
             <mat-icon class="margin-right-xs">sort</mat-icon> Sort
         </button>
@@ -16,18 +16,20 @@
         <button mat-button type="button" (click)="openFilter()" class="apply-filter margin-right-s">
             Apply Filter <mat-icon class="margin-right-xs">filter_list</mat-icon>
         </button>
-    </div>
-    <div class="flex flex-end" *ngIf="!isApprovals">
-        <button mat-button type="button" class="search-btn" [routerLink]="['/app/home/user-creation']"
-            [ngClass]="{'disable': isContentLive}">Create user</button>
-    </div>
-    <div class="flex flex-end margin-right-s" *ngIf="isApprovals && showApproveALL">
-        <button mat-button type="button" class="search-btn" (click)="approveAll()"
-            [disabled]="disableApproveALL">Approve all requests</button>
-    </div>
-    <div class="flex flex-end" *ngIf="isApprovals">
-        <button mat-button type="button" class="search-btn" [routerLink]="['/app/home/approvals/bulkupdate']"
-            [ngClass]="{'disable': isContentLive}">Bulk profile update</button>
+    </div> -->
+    <div class="flex flex-row gap-6">
+        <div class="flex" *ngIf="!isApprovals && currentFilter === 'allusers'">
+            <button mat-button type="button" class="search-btn" [routerLink]="['/app/home/user-creation']"
+                [ngClass]="{'disable': isContentLive}">Create user</button>
+        </div>
+        <div class="flex" *ngIf="isApprovals && showApproveALL">
+            <button mat-button type="button" class="search-btn" (click)="approveAll()"
+                [disabled]="disableApproveALL">Approve all requests</button>
+        </div>
+        <div class="flex" *ngIf="isApprovals">
+            <button mat-button type="button" class="search-btn" [routerLink]="['/app/home/approvals/bulkupdate']"
+                [ngClass]="{'disable': isContentLive}">Bulk profile update</button>
+        </div>
     </div>
 </div>
 

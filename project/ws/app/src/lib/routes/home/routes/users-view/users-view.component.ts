@@ -6,7 +6,6 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser'
 /* tslint:disable */
 import _ from 'lodash'
 /* tslint:enable */
-import { takeUntil } from 'rxjs/operators'
 import { Subject } from 'rxjs'
 
 import { EventService } from '@sunbird-cb/utils'
@@ -99,6 +98,7 @@ export class UsersViewComponent implements OnInit, OnDestroy {
     this.getAllUsers('')
     this.getVUsers('')
     this.getNVUsers('')
+    this.getNMUsers('')
 
     this.reportsNoteList = [
       `Easily create users individually or in bulk.`,
@@ -154,6 +154,8 @@ export class UsersViewComponent implements OnInit, OnDestroy {
       this.getVUsers(query)
     } else if (this.currentFilter === 'nonverified') {
       this.getNVUsers(query)
+    } else if (this.currentFilter === 'notmyuser') {
+      this.getNMUsers(query)
     }
   }
 
@@ -196,40 +198,11 @@ export class UsersViewComponent implements OnInit, OnDestroy {
       status: 1,
     }
 
-    this.usersService.getAllKongUsers(filterReq, this.limit, this.pageIndex, query)
-      .pipe(takeUntil(this.destroySubject$))
-      .subscribe((data: any) => {
-        const allUsersData = data.result.response
-        // if (allusersData && allusersData.content && allusersData.content.length > 0) {
-        //   _.filter(allusersData.content, { isDeleted: false }).forEach((user: any) => {
-        //     // tslint:disable-next-line
-        //     const org = { roles: _.get(_.first(_.filter(user.organisations,
-        // { organisationId: _.get(this.configSvc, 'unMappedUser.rootOrg.id') })), 'roles') }
-        //     usersData.push({
-        //       fullname: user ? `${user.firstName}` : null,
-        //       // fullname: user ? `${user.firstName} ${user.lastName}` : null,
-        //       email: user.personalDetails && user.personalDetails.primaryEmail ?
-        //         this.profileUtilSvc.emailTransform(user.personalDetails.primaryEmail) : this.profileUtilSvc.emailTransform(user.email),
-        //       role: org.roles || [],
-        //       userId: user.id,
-        //       active: !user.isDeleted,
-        //       blocked: user.blocked,
-        //       roles: _.join(_.map((org.roles || []), i => `<li>${i}</li>`), ''),
-        //       orgId: user.rootOrgId,
-        //       orgName: user.rootOrgName,
-        //       allowEditUser: this.showEditUser(org.roles),
-        //     })
-        //   })
-
-        //   usersData.sort((a: any, b: any) => {
-        //     const textA = a.fullname.toUpperCase()
-        //     const textB = b.fullname.toUpperCase()
-        //     return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-        //   })
-        // }
-        this.activeUsersData = allUsersData.content
-        this.activeUsersDataCount = data.result.response.count
-      })
+    this.usersService.getAllKongUsers(filterReq, this.limit, this.pageIndex, query).subscribe((data: any) => {
+      const allusersData = data.result.response
+      this.activeUsersData = allusersData.content
+      this.activeUsersDataCount = data.result.response.count
+    })
   }
   async getVUsers(query: string) {
     this.loaderService.changeLoad.next(true)
@@ -256,6 +229,20 @@ export class UsersViewComponent implements OnInit, OnDestroy {
       const allusersData = data.result.response
       this.nonverifiedUsersData = allusersData.content
       this.nonverifiedUsersDataCount = data.result.response.count
+    })
+  }
+
+  async getNMUsers(query: string) {
+    this.loaderService.changeLoad.next(true)
+    const filtreq = {
+      rootOrgId: this.rootOrgId,
+      'profileDetails.profileStatus': 'NOT-MY-USER',
+    }
+
+    this.usersService.getAllKongUsers(filtreq, this.limit, this.pageIndex, query).subscribe((data: any) => {
+      const allusersData = data.result.response
+      this.notmyuserUsersData = allusersData.content
+      this.notmyuserUsersDataCount = data.result.response.count
     })
   }
 

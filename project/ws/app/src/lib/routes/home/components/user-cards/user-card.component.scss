@@ -9,7 +9,7 @@
   border-radius: 5px !important;
 
   .mat-expansion-panel-header {
-    padding: 14px 24px !important;
+    padding: 10px 24px !important;
   }
 
   .mat-content{
@@ -57,12 +57,21 @@
   .status-label.nonverified {
     background: #D13924;
   }
+  .status-label.notmyuser {
+    background: #e99e38;
+  }
 
   .verified-icon {
     color: #1D8923;
+    vertical-align: sub;
   }
   .nonverified-icon {
     color: #D13924;
+    vertical-align: sub;
+  }
+  .notmyuser-icon {
+    color: #e99e38;
+    vertical-align: sub;
   }
 
  .button {
@@ -79,6 +88,12 @@
     }
   }
 }
+
+::ng-deep .mat-expansion-panel-header {
+  min-height: 48px !important;
+  height: inherit !important;
+}
+
 ::ng-deep .mat-expansion-panel-header .mat-expansion-indicator::after {
     content: "+";
     border: 0;
@@ -255,6 +270,8 @@ label {
     margin-right: 12px;
     height: auto;
     padding: 0.7em 0;
+    display: ruby;
+    height: 50px;
   }
 
   .mat-form-field-disabled .mat-form-field-outline {
@@ -290,6 +307,12 @@ label {
   vertical-align: middle;
   height: 30px !important;
 }
+.orangeicon-dialog {
+  color: #e99e38;
+  vertical-align: middle;
+  height: 45px !important;
+  font-size: 36px;
+}
 .editreasonicon {
   vertical-align: middle;
   color: #666 !important;
@@ -314,4 +337,12 @@ label {
     padding: 10px 24px !important;
     margin-bottom: 0 !important;
   }
+}
+
+.blue-text {
+  color:#1B4CA1;
+}
+
+.word-wrap {
+  word-wrap: break-word;
 }
